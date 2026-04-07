@@ -1,130 +1,387 @@
-<!-- ======================
-     PROFILO UTENTE
-======================= -->
-<section id="view-profile" data-view-section>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Header profilo -->
-  <div class="profile-header">
-    <h2>Profilo</h2>
+  <title>Kong Fit</title>
+  <meta name="description" content="Kong Fit – web app minimal per schede di allenamento e storico workout." />
 
-    <!-- Chiudi profilo -->
-    <button id="close-profile" aria-label="Chiudi profilo">
-      ✕
-    </button>
-  </div>
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
 
-  <!-- ======================
-       ACCOUNT
-  ======================= -->
-  <div class="item">
-    <h3>Account</h3>
+<body>
 
-    <p>
-      <strong>Nome utente:</strong>
-      <span id="profile-username">—</span>
-    </p>
-
-    <p>
-      <strong>Codice personale (PIN):</strong>
-      <span id="profile-pin">••••</span>
-    </p>
-  </div>
-
-  <!-- ======================
-       DATI FISICI
-  ======================= -->
-  <div class="item">
-    <h3>Dati fisici</h3>
-
-    <label for="profile-weight">Peso (kg)</label>
-    <input
-      id="profile-weight"
-      type="number"
-      step="0.1"
-      placeholder="es. 78.4"
-    />
-
-    <label for="profile-height">Altezza (cm)</label>
-    <input
-      id="profile-height"
-      type="number"
-      step="1"
-      placeholder="es. 178"
-    />
-
-    <button id="save-profile" class="primary">
-      Salva dati
-    </button>
-  </div>
-
-  <!-- ======================
-       CALENDARIO
-  ======================= -->
-  <div class="item">
-    <h3>Calendario allenamenti</h3>
-
-    <!-- Intestazione mese -->
-    <div class="calendar-header">
-      <button id="calendar-prev" aria-label="Mese precedente">‹</button>
-      <strong id="calendar-month">Aprile 2026</strong>
-      <button id="calendar-next" aria-label="Mese successivo">›</button>
+  <!-- =====================================================
+       HEADER / TOP BAR
+  ====================================================== -->
+  <header id="app-header">
+    <div class="logo">
+      <img src="assets/logo.svg" alt="Kong Fit logo" style="width:28px;height:28px;" />
+      <h1>Kong Fit</h1>
     </div>
 
-    <!-- Giorni settimana -->
-    <div class="calendar-weekdays">
-      <span>L</span>
-      <span>M</span>
-      <span>M</span>
-      <span>G</span>
-      <span>V</span>
-      <span>S</span>
-      <span>D</span>
+    <nav id="main-nav">
+      <button data-view="home">Home</button>
+      <button data-view="scheda">Scheda</button>
+      <button data-view="workout">Allenamento</button>
+      <button data-view="history">Storico</button>
+      <button data-view="settings">Impostazioni</button>
+      <!-- visibile solo se admin (gestito da JS) -->
+      <button data-view="admin" id="nav-admin">Admin</button>
+    </nav>
+
+    <!-- Account bar (gestita da JS) -->
+    <div id="account-bar">
+      <span id="account-label">—</span>
+      <button id="switch-btn" type="button">Cambia</button>
+      <button id="logout-btn" type="button">Esci</button>
     </div>
+  </header>
 
-    <!-- Griglia giorni -->
-    <div class="calendar-grid">
-      <!--
-        Ogni giorno è un button:
-        - data-day="YYYY-MM-DD"
-        - JS: click → mostra allenamenti del giorno
-      -->
 
-      <button class="calendar-day" data-day="2026-04-01">1</button>
-      <button class="calendar-day" data-day="2026-04-02">2</button>
-      <button class="calendar-day" data-day="2026-04-03">3</button>
-      <button class="calendar-day" data-day="2026-04-04">4</button>
-      <button class="calendar-day" data-day="2026-04-05">5</button>
-      <button class="calendar-day" data-day="2026-04-06">6</button>
-      <button class="calendar-day" data-day="2026-04-07">7</button>
-      <!-- … il resto del mese sarà generato via JS -->
-    </div>
+  <!-- =====================================================
+       MAIN APP CONTAINER
+  ====================================================== -->
+  <main id="app">
 
-    <!-- Dettaglio giorno selezionato -->
-    <div id="calendar-detail">
-      <p class="muted">
-        Seleziona un giorno per vedere gli allenamenti svolti.
+    <!-- ======================
+         LOGIN (PIN)
+    ======================= -->
+    <section id="view-login" data-view-section>
+      <h2>Accesso</h2>
+      <p>Inserisci il PIN a 4 cifre per entrare.</p>
+
+      <form id="login-form">
+        <div>
+          <label for="pin-input">PIN</label>
+          <input
+            id="pin-input"
+            type="password"
+            inputmode="numeric"
+            maxlength="4"
+            placeholder="••••"
+            autocomplete="one-time-code"
+          />
+        </div>
+
+        <button class="primary" type="submit">Entra</button>
+      </form>
+
+      <p id="login-error" class="muted"></p>
+    </section>
+
+    <!-- ======================
+         PROFILO UTENTE
+    ======================= -->
+    <section id="view-profile" data-view-section>
+
+      <!-- Header profilo -->
+      <div class="profile-header">
+        <h2>Profilo</h2>
+
+        <!-- Chiudi profilo -->
+        <button id="close-profile" aria-label="Chiudi profilo">
+          ✕
+        </button>
+      </div>
+
+      <!-- ======================
+           ACCOUNT
+      ======================= -->
+      <div class="item">
+        <h3>Account</h3>
+
+        <p>
+          <strong>Nome utente:</strong>
+          <span id="profile-username">—</span>
+        </p>
+
+        <p>
+          <strong>Codice personale (PIN):</strong>
+          <span id="profile-pin">••••</span>
+        </p>
+      </div>
+
+      <!-- ======================
+           DATI FISICI
+      ======================= -->
+      <div class="item">
+        <h3>Dati fisici</h3>
+
+        <label for="profile-weight">Peso (kg)</label>
+        <input
+          id="profile-weight"
+          type="number"
+          step="0.1"
+          placeholder="es. 78.4"
+        />
+
+        <label for="profile-height">Altezza (cm)</label>
+        <input
+          id="profile-height"
+          type="number"
+          step="1"
+          placeholder="es. 178"
+        />
+
+        <button id="save-profile" class="primary">
+          Salva dati
+        </button>
+      </div>
+
+      <!-- ======================
+           CALENDARIO
+      ======================= -->
+      <div class="item">
+        <h3>Calendario allenamenti</h3>
+
+        <!-- Intestazione mese -->
+        <div class="calendar-header">
+          <button id="calendar-prev" aria-label="Mese precedente">‹</button>
+          <strong id="calendar-month">Aprile 2026</strong>
+          <button id="calendar-next" aria-label="Mese successivo">›</button>
+        </div>
+
+        <!-- Giorni settimana -->
+        <div class="calendar-weekdays">
+          <span>L</span>
+          <span>M</span>
+          <span>M</span>
+          <span>G</span>
+          <span>V</span>
+          <span>S</span>
+          <span>D</span>
+        </div>
+
+        <!-- Griglia giorni -->
+        <div class="calendar-grid">
+          <!--
+            Ogni giorno è un button:
+            - data-day="YYYY-MM-DD"
+            - JS: click → mostra allenamenti del giorno
+          -->
+
+          <button class="calendar-day" data-day="2026-04-01">1</button>
+          <button class="calendar-day" data-day="2026-04-02">2</button>
+          <button class="calendar-day" data-day="2026-04-03">3</button>
+          <button class="calendar-day" data-day="2026-04-04">4</button>
+          <button class="calendar-day" data-day="2026-04-05">5</button>
+          <button class="calendar-day" data-day="2026-04-06">6</button>
+          <button class="calendar-day" data-day="2026-04-07">7</button>
+          <!-- … il resto del mese sarà generato via JS -->
+        </div>
+
+        <!-- Dettaglio giorno selezionato -->
+        <div id="calendar-detail">
+          <p class="muted">
+            Seleziona un giorno per vedere gli allenamenti svolti.
+          </p>
+
+          <!-- Qui JS inserirà lo storico di quel giorno -->
+          <div id="calendar-workouts">
+            <!-- workout del giorno -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================
+           AZIONI ACCOUNT
+      ======================= -->
+      <div class="item">
+        <h3>Sessione</h3>
+
+        <button id="switch-account">
+          Cambia account (PIN)
+        </button>
+
+        <button id="logout-account" class="danger">
+          Logout
+        </button>
+      </div>
+
+    </section>
+
+
+    <!-- ======================
+         SETUP INIZIALE
+    ======================= -->
+    <section id="view-setup" data-view-section>
+      <h2>Setup iniziale</h2>
+      <p class="muted">Scegli quante volte ti alleni (2–4). La scheda verrà impostata automaticamente.</p>
+
+      <form id="setup-form">
+        <div>
+          <label for="user-slug">Nome utente</label>
+          <input id="user-slug" type="text" placeholder="es. mattia" />
+          <p class="muted">Lo slug viene preso dall’account PIN e non è modificabile.</p>
+        </div>
+
+        <div>
+          <label for="days-per-week">Allenamenti settimanali</label>
+          <select id="days-per-week">
+            <option value="2">2 giorni</option>
+            <option value="3">3 giorni</option>
+            <option value="4" selected>4 giorni</option>
+          </select>
+        </div>
+
+        <button class="primary" type="submit">Crea piano</button>
+      </form>
+    </section>
+
+
+    <!-- ======================
+         HOME / DASHBOARD
+    ======================= -->
+    <section id="view-home" data-view-section>
+      <h2>Dashboard</h2>
+
+      <p>
+        Oggi tocca:
+        <strong id="today-workout">—</strong>
       </p>
 
-      <!-- Qui JS inserirà lo storico di quel giorno -->
-      <div id="calendar-workouts">
-        <!-- workout del giorno -->
+      <div id="home-actions">
+        <button class="primary" data-action="start-workout">Inizia allenamento</button>
+        <button data-action="view-scheda">Scheda</button>
+        <button data-action="view-history">Storico</button>
       </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- ======================
-       AZIONI ACCOUNT
-  ======================= -->
-  <div class="item">
-    <h3>Sessione</h3>
 
-    <button id="switch-account">
-      Cambia account (PIN)
-    </button>
+    <!-- ======================
+         SCHEDA ALLENAMENTO
+    ======================= -->
+    <section id="view-scheda" data-view-section>
+      <h2>Scheda di allenamento</h2>
 
-    <button id="logout-account" class="danger">
-      Logout
-    </button>
-  </div>
+      <div id="scheda-container">
+        <!-- Qui verranno renderizzati i giorni e gli esercizi -->
+      </div>
+    </section>
 
-</section>
+
+    <!-- ======================
+         ALLENAMENTO (LOG)
+    ======================= -->
+    <section id="view-workout" data-view-section>
+      <h2>Allenamento</h2>
+
+      <form id="workout-form">
+        <div>
+          <label for="workout-day">Giorno</label>
+          <select id="workout-day">
+            <!-- popolato via JS -->
+          </select>
+        </div>
+
+        <!-- (Opzionale: per ora il JS salva "oggi" automaticamente, ma lasciamo il campo pronto) -->
+        <div>
+          <label for="workout-date">Data (opzionale)</label>
+          <input id="workout-date" type="date" />
+          <p class="muted">Attualmente viene salvata la data di oggi automaticamente.</p>
+        </div>
+
+        <div id="workout-exercises">
+          <!-- esercizi e input set -->
+        </div>
+
+        <div>
+          <label for="bodyweight">Peso corporeo (opz.)</label>
+          <input id="bodyweight" type="number" step="0.1" placeholder="es. 78.4" />
+        </div>
+
+        <button class="primary" type="submit">Salva allenamento</button>
+      </form>
+    </section>
+
+
+    <!-- ======================
+         STORICO ALLENAMENTI
+    ======================= -->
+    <section id="view-history" data-view-section>
+      <h2>Storico allenamenti</h2>
+
+      <div id="history-list">
+        <!-- lista workout -->
+      </div>
+    </section>
+
+
+    <!-- ======================
+         IMPOSTAZIONI
+    ======================= -->
+    <section id="view-settings" data-view-section>
+      <h2>Impostazioni</h2>
+
+      <div class="item">
+        <h3>Piano</h3>
+        <p class="muted">Resetta piano e storico dell’utente corrente.</p>
+        <button id="reset-plan" class="danger" type="button">Reset piano</button>
+      </div>
+
+      <div class="item" style="margin-top:12px;">
+        <h3>GitHub Sync (opzionale)</h3>
+
+        <label for="gh-owner">Owner</label>
+        <input type="text" id="gh-owner" placeholder="es. ilnick7" />
+
+        <label for="gh-repo">Repository</label>
+        <input type="text" id="gh-repo" placeholder="es. Kong-fit" />
+
+        <label for="gh-branch">Branch</label>
+        <input type="text" id="gh-branch" value="main" />
+
+        <label for="gh-token">Token</label>
+        <input type="password" id="gh-token" placeholder="ghp_..." />
+
+        <div style="margin-top:10px; display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap;">
+          <button id="gh-pull" type="button">Pull</button>
+          <button id="gh-push" class="primary" type="button">Push</button>
+        </div>
+
+        <p class="muted" style="margin-top:10px;">
+          Nota: in questa versione il wiring dei bottoni GitHub può essere gestito in JS separatamente.
+        </p>
+      </div>
+    </section>
+
+
+    <!-- ======================
+         ADMIN (solo admin)
+    ======================= -->
+    <section id="view-admin" data-view-section>
+      <h2>Admin</h2>
+      <p class="muted">Area riservata. Qui verrà l’editor delle schede (solo admin).</p>
+
+      <div id="admin-panel" class="item">
+        <p class="muted">Coming soon: creazione/modifica schede.</p>
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- =====================================================
+       FOOTER
+  ====================================================== -->
+  <footer id="app-footer">
+    <p>Kong Fit · Personal workout tracker</p>
+  </footer>
+
+
+  <!-- JS (ordine importante) -->
+  <script src="js/state.js"></script>
+  <script src="js/templates.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/github.js"></script>
+  <script src="js/workout.js"></script>
+  <script src="js/history.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
