@@ -1,23 +1,19 @@
 /* Kong Fit - app.js
-   Router SPA + Auth PIN + Ruoli (admin/user)
+   Router SPA + Auth PIN + navigazione pulita:
+   Sezioni principali: Allenamento (home), Schede, Obiettivi
+   Profilo apribile da icona user (profile-btn)
 */
 (function () {
   const KongFit = (window.KongFit = window.KongFit || {});
   const { getDB, setDB, ensureUser, getCurrentUser } = KongFit.state;
   const { templateIdForDays, getTemplate } = KongFit.templates;
-  const { getSession, loginWithPin, switchAccount, logout, isAdmin, ensureAuth } = KongFit.auth;
+  const { getSession, loginWithPin, ensureAuth, isAdmin } = KongFit.auth;
 
-  function hideAllViews() {
-    document.querySelectorAll("[data-view-section]").forEach(sec => {
-      sec.style.display = "none";
-    });
-  }
-
-  function showView(viewName) {
-    hideAllViews();
-    const sec = document.getElementById(`view-${viewName}`);
-    if (sec) sec.style.display = "block";
-  }
+  // -------------------------
+  // Helpers DOM
+  // -------------------------
+  function $(sel) { return document.querySelector(sel); }
+  function $all(sel) { return Array.from(document.querySelectorAll(sel)); }
 
   function escapeHtml(s) {
     return String(s ?? "").replace(/[&<>"']/g, c => ({
@@ -25,101 +21,78 @@
     }[c]));
   }
 
-  function updateAccountBar() {
-    const label = document.getElementById("account-label");
-    const btnLogout = document.getElementById("logout-btn");
-    const btnSwitch = document.getElementById("switch-btn");
-    const navAdmin = document.getElementById("nav-admin");
+  // -------------------------
+  // View mapping (robusto)
+  // -------------------------
+  // Supporta sia view-scheda che view-schede
+  function resolveViewId(name) {
+    const direct = `view-${name}`;
+    if (document.getElementById(direct)) return direct;
 
-    const s = getSession();
+    // alias utili
+    const aliases = {
+      allenamento: ["home"],
+      home: ["allenamento"],
+      schede: ["scheda"],
+      scheda: ["schede"],
+      obiettivi: ["obiettivo", "goals"],
+      goals: ["obiettivi"],
+      profile: ["profilo"],
+      profilo: ["profile"]
+    };
 
-    if (!label || !btnLogout || !btnSwitch) return;
-
-    if (!s) {
-      label.textContent = "Non loggato";
-      btnLogout.style.display = "none";
-      btnSwitch.style.display = "none";
-      if (navAdmin) navAdmin.style.display = "none";
-      return;
+    for (const alt of (aliases[name] || [])) {
+      const id = `view-${alt}`;
+      if (document.getElementById(id)) return id;
     }
 
-    label.textContent = `👤 ${s.slug} (${s.role})`;
-    btnLogout.style.display = "inline-block";
-    btnSwitch.style.display = "inline-block";
-    if (navAdmin) navAdmin.style.display = isAdmin() ? "inline-block" : "none";
+    return null;
   }
 
-  function updateTodayLabelAndPreview() {
-    const db = getDB();
-    const user = getCurrentUser(db);
-    const label = document.getElementById("today-workout");
-    if (!label) return;
-
-    if (!user) {
-      label.textContent = "—";
-      return;
-    }
-
-    const tpl = getTemplate(user.config.templateId);
-    const idx = (user.config.rotationIndex || 0) % tpl.days.length;
-    label.textContent = tpl.days[idx].name;
-  }
-
-  function renderScheda() {
-    const db = getDB();
-    const user = getCurrentUser(db);
-    if (!user) return;
-
-    const tpl = getTemplate(user.config.templateId);
-    const wrap = document.getElementById("scheda-container");
-
-    wrap.innerHTML = tpl.days.map(day => {
-      const exHtml = day.exercises.map(ex => `
-        <div class="item">
-          <div class="item-head">
-            <div><strong>${escapeHtml(ex.name)}</strong> <span class="pill">${ex.setsTarget}x ${escapeHtml(ex.repsTarget)}</span></div>
-            <span class="mini">rest ${ex.rest || 0}s</span>
-          </div>
-        </div>
-      `).join("");
-
-      return `
-        <div class="item">
-          <div class="item-head">
-            <div><strong>${escapeHtml(day.name)}</strong></div>
-            <span class="mini">${day.id}</span>
-          </div>
-          <div style="margin-top:10px; display:grid; gap:10px;">
-            ${exHtml}
-          </div>
-        </div>
-      `;
-    }).join("");
-  }
-
-  function wireNav() {
-    document.querySelectorAll("#main-nav button[data-view]").forEach(btn => {
-      btn.addEventListener("click", () => navigate(btn.dataset.view));
+  function hideAllViews() {
+    $all("[data-view-section]").forEach(sec => {
+      sec.style.display = "none";
     });
+  }
 
-    const homeActions = document.getElementById("home-actions");
-    if (homeActions) {
-      homeActions.addEventListener("click", (ev) => {
-        const b = ev.target.closest("button[data-action]");
-        if (!b) return;
-        const a = b.dataset.action;
-        if (a === "start-workout") navigate("workout");
-        if (a === "view-scheda") navigate("scheda");
-        if (a === "view-history") navigate("history");
-      });
-    }
+  function showView(name) {
+    hideAllViews();
+    const id = resolveViewId(name);
+    if (!id) return;
+    const sec = document.getElementById(id);
+    sec.style.display = "block";
+  }
+
+  // -------------------------
+  // Guard (auth)
+  // -------------------------
+  function guard(viewName) {
+    const session = getSession();
+
+    // se non loggato -> login
+    if (!session && viewName !== "login") return "login";
+
+    // se view richiesta non esiste, fallback
+    if (!resolveViewId(viewName)) return "home";
+
+    return viewName;
+  }
+
+  // -------------------------
+  // Setup logic
+  // -------------------------
+  function userNeedsSetup(user) {
+    // Se non ha daysPerWeek/templateId definiti, consideriamo setup necessario
+    if (!user?.config) return true;
+    if (!user.config.daysPerWeek) return true;
+    if (!user.config.templateId) return true;
+    return false;
   }
 
   function wireLogin() {
     const form = document.getElementById("login-form");
     const pinInput = document.getElementById("pin-input");
     const err = document.getElementById("login-error");
-
     if (!form || !pinInput) return;
 
     form.onsubmit = (ev) => {
@@ -130,35 +103,37 @@
       const res = loginWithPin(pin);
 
       if (!res.ok) {
-        if (err) err.textContent = res.reason || "Errore login";
+        if (err) err.textContent = res.reason || "PIN errato";
         pinInput.value = "";
         pinInput.focus();
         return;
       }
 
       pinInput.value = "";
-      updateAccountBar();
 
-      // Se è la prima volta che entra, lo mandi al setup per scegliere 2/3/4 (opzionale)
-      navigate("setup");
+      const db = getDB();
+      const user = getCurrentUser(db);
+
+      // se serve setup -> setup, altrimenti home
+      if (userNeedsSetup(user) && resolveViewId("setup")) navigate("setup");
+      else navigate("home");
     };
   }
 
   function wireSetup() {
     const form = document.getElementById("setup-form");
-    if (!form) return;
-
     const slugInput = document.getElementById("user-slug");
     const daysSelect = document.getElementById("days-per-week");
+    if (!form || !daysSelect) return;
 
     form.onsubmit = (ev) => {
       ev.preventDefault();
 
-      const s = getSession();
-      if (!s) return navigate("login");
+      const session = getSession();
+      if (!session) return navigate("login");
 
-      const slug = s.slug; // lo slug lo decide l'account
-      const days = Number(daysSelect?.value || 4);
+      const slug = session.slug;
+      const days = Number(daysSelect.value || 4);
 
       const db = getDB();
       ensureUser(db, slug);
@@ -175,14 +150,15 @@
       navigate("home");
     };
 
-    // Quando entro nel setup, precompila slug e bloccalo (non si cambia)
+    // prefill slug e blocca
     function prefill() {
       const s = getSession();
-      if (!s || !slugInput) return;
-
-      slugInput.value = s.slug;
-      slugInput.disabled = true;
-
+      if (!s) return;
+      if (slugInput) {
+        slugInput.value = s.slug;
+        slugInput.disabled = true;
+      }
+      // seleziona days già esistenti se presenti
       const db = getDB();
       const user = getCurrentUser(db);
       if (user && daysSelect) {
@@ -193,116 +169,218 @@
     KongFit.app._prefillSetup = prefill;
   }
 
-  function wireAccountButtons() {
-    const btnLogout = document.getElementById("logout-btn");
-    const btnSwitch = document.getElementById("switch-btn");
+  // -------------------------
+  // Home (Allenamento) render
+  // -------------------------
+  function getNextDay(user) {
+    const tpl = getTemplate(user.config.templateId);
+    const idx = (user.config.rotationIndex || 0) % tpl.days.length;
+    return { tpl, day: tpl.days[idx], idx };
+  }
 
-    if (btnLogout) {
-      btnLogout.onclick = () => {
-        logout();
-        updateAccountBar();
-        navigate("login");
-      };
-    }
+  function renderHomeAllenamento() {
+    const db = getDB();
+    const user = getCurrentUser(db);
+    if (!user) return;
 
-    if (btnSwitch) {
-      btnSwitch.onclick = () => {
-        const pin = prompt("Inserisci PIN (4 cifre) per cambiare account / passare ad admin:");
-        if (pin == null) return;
+    const label = document.getElementById("today-workout");
+    const preview = document.getElementById("today-preview");
 
-        const res = switchAccount(pin.trim());
-        if (!res.ok) {
-          alert(res.reason || "PIN errato");
-          return;
-        }
+    const { day } = getNextDay(user);
 
-        updateAccountBar();
-        navigate("home");
-      };
+    if (label) label.textContent = day.name;
+
+    // Preview esercizi (opzionale): se in HTML c'è #today-preview
+    if (preview) {
+      preview.innerHTML = day.exercises.slice(0, 6).map(ex => `
+        <div class="item">
+          <strong>${escapeHtml(ex.name)}</strong>
+          <span class="pill">${ex.setsTarget}x ${escapeHtml(ex.repsTarget)}</span>
+        </div>
+      `).join("");
     }
   }
 
-  function wireSettings() {
-    const resetBtn = document.getElementById("reset-plan");
-    if (resetBtn) {
-      resetBtn.onclick = () => {
-        const s = getSession();
-        if (!s) return navigate("login");
+  // Home actions (se presenti pulsanti)
+  function wireHomeActions() {
+    const wrap = document.getElementById("home-actions");
+    if (!wrap) return;
 
-        if (!confirm("Reset piano: cancella workouts e reimposta config. Continuo?")) return;
+    wrap.addEventListener("click", (ev) => {
+      const b = ev.target.closest("button[data-action]");
+      if (!b) return;
 
-        const db = getDB();
-        db.users[s.slug] = {
-          config: { slug: s.slug, createdAt: new Date().toISOString(), daysPerWeek: 4, templateId: "tpl-4", rotationIndex: 0 },
-          workouts: []
-        };
-        setDB(db);
-        navigate("home");
-      };
+      const a = b.dataset.action;
+
+      // se nel tuo HTML vuoi ancora un workflow separato con view-workout, supportato:
+      if (a === "start-workout") {
+        if (resolveViewId("workout")) navigate("workout");
+        else navigate("home");
+      }
+      if (a === "view-scheda") navigate(resolveViewId("schede") ? "schede" : "scheda");
+      if (a === "view-history") {
+        // storico non è più sezione principale, ma se esiste ancora lo supportiamo
+        if (resolveViewId("history")) navigate("history");
+      }
+    });
+  }
+
+  // -------------------------
+  // Schede render
+  // -------------------------
+  function renderSchede() {
+    const db = getDB();
+    const user = getCurrentUser(db);
+    if (!user) return;
+
+    const tpl = getTemplate(user.config.templateId);
+    const wrap = document.getElementById("scheda-container") || document.getElementById("schede-container");
+    if (!wrap) return;
+
+    wrap.innerHTML = tpl.days.map(day => {
+      const exHtml = day.exercises.map(ex => `
+        <div class="item">
+          <div class="item-head">
+            <div><strong>${escapeHtml(ex.name)}</strong> <span class="pill">${ex.setsTarget}x ${escapeHtml(ex.repsTarget)}</span></div>
+            <span class="mini">rest ${ex.rest || 0}s</span>
+          </div>
+        </div>
+      `).join("");
+
+      return `
+        <div class="item">
+          <div class="item-head">
+            <div><strong>${escapeHtml(day.name)}</strong></div>
+            <span class="mini">${escapeHtml(day.id)}</span>
+          </div>
+          <div style="margin-top:10px; display:grid; gap:10px;">
+            ${exHtml}
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  // -------------------------
+  // Obiettivi (placeholder)
+  // -------------------------
+  function renderObiettivi() {
+    // Per ora non facciamo nulla: è solo una view
+    // Qui potremo poi renderizzare target peso, checklist, ecc.
+  }
+
+  // -------------------------
+  // Profilo
+  // -------------------------
+  function wireProfileButton() {
+    const btn = document.getElementById("profile-btn");
+    if (!btn) return;
+    btn.addEventListener("click", () => navigate("profile"));
+  }
+
+  // -------------------------
+  // Nav principale (solo Allenamento/Schede/Obiettivi)
+  // -------------------------
+  function wireMainNav() {
+    const nav = document.getElementById("main-nav");
+    if (!nav) return;
+
+    nav.addEventListener("click", (ev) => {
+      const b = ev.target.closest("button[data-view]");
+      if (!b) return;
+
+      const view = b.dataset.view;
+      navigate(view);
+    });
+
+    // Se per caso in HTML hai ancora Admin, lo nascondiamo automaticamente
+    const adminBtn = document.getElementById("nav-admin");
+    if (adminBtn) {
+      adminBtn.style.display = isAdmin() ? "inline-block" : "none";
     }
-
-    // GitHub buttons restano nel tuo app.js precedente? Qui non li tocchiamo.
-    // Se vuoi, li reintegriamo dopo senza conflitti.
   }
 
-  function guard(viewName) {
-    const s = getSession();
-
-    // Se non sei loggato, puoi vedere solo login
-    if (!s && viewName !== "login") return "login";
-
-    // Se chiedi admin ma non sei admin -> home
-    if (viewName === "admin" && !isAdmin()) return "home";
-
-    return viewName;
-  }
-
+  // -------------------------
+  // Router
+  // -------------------------
   function navigate(viewName) {
     viewName = guard(viewName);
 
     showView(viewName);
-    updateAccountBar();
 
-    if (viewName === "login") return;
-
-    // Setup: prefill
+    // Hook speciali per vista
     if (viewName === "setup") {
       KongFit.app._prefillSetup && KongFit.app._prefillSetup();
       return;
     }
 
-    // Render per vista
-    if (viewName === "home") updateTodayLabelAndPreview();
-    if (viewName === "scheda") renderScheda();
-    if (viewName === "workout") KongFit.workout.renderWorkoutView();
-    if (viewName === "history") KongFit.history.renderHistoryView();
+    if (viewName === "home" || viewName === "allenamento") {
+      renderHomeAllenamento();
+      return;
+    }
 
-    // Admin placeholder
-    if (viewName === "admin") {
-      // per ora niente, in futuro editor schede
+    if (viewName === "schede" || viewName === "scheda") {
+      renderSchede();
+      return;
+    }
+
+    if (viewName === "obiettivi" || viewName === "goals") {
+      renderObiettivi();
+      return;
+    }
+
+    // Supporto legacy: workout/history se ancora presenti
+    if (viewName === "workout" && KongFit.workout?.renderWorkoutView) {
+      KongFit.workout.renderWorkoutView();
+      return;
+    }
+
+    if (viewName === "history" && KongFit.history?.renderHistoryView) {
+      KongFit.history.renderHistoryView();
+      return;
+    }
+
+    // Profilo
+    if ((viewName === "profile" || viewName === "profilo") && KongFit.profile?.renderProfile) {
+      KongFit.profile.renderProfile();
+      return;
     }
   }
 
-  // Expose minimal API
+  // Expose
   KongFit.app = KongFit.app || {};
   KongFit.app.navigate = navigate;
   KongFit.app._prefillSetup = null;
 
+  // -------------------------
+  // Boot
+  // -------------------------
   document.addEventListener("DOMContentLoaded", () => {
-    // ensure db has auth accounts
+    // Init DB auth shape
     const db = ensureAuth(getDB());
     setDB(db);
 
-    wireNav();
+    wireMainNav();
     wireLogin();
     wireSetup();
-    wireAccountButtons();
-    wireSettings();
+    wireHomeActions();
+    wireProfileButton();
 
-    // start
-    updateAccountBar();
-    const s = getSession();
-    if (!s) navigate("login");
+    // wiring profilo (close/switch/logout/calendar) se profile.js presente
+    if (KongFit.profile?.wireProfileUI) {
+      KongFit.profile.wireProfileUI();
+    }
+
+    // Start
+    const session = getSession();
+    if (!session) {
+      navigate("login");
+      return;
+    }
+
+    // se loggato, se serve setup -> setup, altrimenti Allenamento (home)
+    const user = getCurrentUser(getDB());
+    if (userNeedsSetup(user) && resolveViewId("setup")) navigate("setup");
     else navigate("home");
   });
 })();
