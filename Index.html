@@ -1,1 +1,192 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <title>Kong Fit</title>
+  <meta name="description" content="Kong Fit – web app minimal per schede di allenamento e storico workout." />
+
+  <!-- CSS (verranno aggiunti dopo) -->
+  <!-- <link rel="stylesheet" href="css/main.css"> -->
+</head>
+
+<body>
+
+  <!-- =====================================================
+       HEADER / TOP BAR
+  ====================================================== -->
+  <header id="app-header">
+    <div class="logo">
+      <!-- logo in assets/ -->
+      <img src="assets/logo.svg" alt="Kong Fit logo" />
+      <h1>Kong Fit</h1>
+    </div>
+
+    <nav id="main-nav">
+      <button data-view="home">Home</button>
+      <button data-view="scheda">Scheda</button>
+      <button data-view="workout">Allenamento</button>
+      <button data-view="history">Storico</button>
+      <button data-view="settings">Impostazioni</button>
+    </nav>
+  </header>
+
+
+  <!-- =====================================================
+       MAIN APP CONTAINER
+  ====================================================== -->
+  <main id="app">
+
+    <!-- ======================
+         SETUP INIZIALE
+    ======================= -->
+    <section id="view-setup" data-view-section>
+      <h2>Setup iniziale</h2>
+
+      <form id="setup-form">
+        <div>
+          <label for="user-slug">Nome utente</label>
+          <input id="user-slug" type="text" placeholder="es. mattia" />
+        </div>
+
+        <div>
+          <label for="days-per-week">Allenamenti settimanali</label>
+          <select id="days-per-week">
+            <option value="2">2 giorni</option>
+            <option value="3">3 giorni</option>
+            <option value="4">4 giorni</option>
+          </select>
+        </div>
+
+        <button type="submit">Crea piano</button>
+      </form>
+    </section>
+
+
+    <!-- ======================
+         HOME / DASHBOARD
+    ======================= -->
+    <section id="view-home" data-view-section>
+      <h2>Dashboard</h2>
+
+      <p>
+        Oggi tocca:
+        <strong id="today-workout">—</strong>
+      </p>
+
+      <div id="home-actions">
+        <button data-action="start-workout">Inizia allenamento</button>
+        <button data-action="view-scheda">Vedi scheda</button>
+        <button data-action="view-history">Storico</button>
+      </div>
+    </section>
+
+
+    <!-- ======================
+         SCHEDA ALLENAMENTO
+    ======================= -->
+    <section id="view-scheda" data-view-section>
+      <h2>Scheda di allenamento</h2>
+
+      <div id="scheda-container">
+        <!-- Qui verranno renderizzati i giorni e gli esercizi -->
+      </div>
+    </section>
+
+
+    <!-- ======================
+         ALLENAMENTO (LOG)
+    ======================= -->
+    <section id="view-workout" data-view-section>
+      <h2>Allenamento</h2>
+
+      <form id="workout-form">
+        <div>
+          <label for="workout-day">Giorno</label>
+          <select id="workout-day">
+            <!-- popolato via JS -->
+          </select>
+        </div>
+
+        <div id="workout-exercises">
+          <!-- esercizi e input set -->
+        </div>
+
+        <div>
+          <label for="bodyweight">Peso corporeo (opz.)</label>
+          <input id="bodyweight" type="number" step="0.1" />
+        </div>
+
+        <button type="submit">Salva allenamento</button>
+      </form>
+    </section>
+
+
+    <!-- ======================
+         STORICO ALLENAMENTI
+    ======================= -->
+    <section id="view-history" data-view-section>
+      <h2>Storico allenamenti</h2>
+
+      <div id="history-list">
+        <!-- lista workout -->
+      </div>
+    </section>
+
+
+    <!-- ======================
+         IMPOSTAZIONI
+    ======================= -->
+    <section id="view-settings" data-view-section>
+      <h2>Impostazioni</h2>
+
+      <div>
+        <h3>Piano</h3>
+        <button id="reset-plan">Reset piano</button>
+      </div>
+
+      <div>
+        <h3>GitHub Sync (opzionale)</h3>
+
+        <label>Owner</label>
+        <input type="text" id="gh-owner" />
+
+        <label>Repository</label>
+        <input type="text" id="gh-repo" />
+
+        <label>Branch</label>
+        <input type="text" id="gh-branch" value="main" />
+
+        <label>Token</label>
+        <input type="password" id="gh-token" />
+
+        <div>
+          <button id="gh-pull">Pull</button>
+          <button id="gh-push">Push</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- =====================================================
+       FOOTER
+  ====================================================== -->
+  <footer id="app-footer">
+    <p>Kong Fit · Personal workout tracker</p>
+  </footer>
+
+
+  <!-- JS (verranno aggiunti dopo) -->
+  <!--
+  <script src="js/state.js"></script>
+  <script src="js/templates.js"></script>
+  <script src="js/workout.js"></script>
+  <script src="js/history.js"></script>
+  <script src="js/github.js"></script>
+  <script src="js/app.js"></script>
+  -->
+</body>
+</html>
