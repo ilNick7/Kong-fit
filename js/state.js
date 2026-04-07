@@ -27,6 +27,7 @@
     db.currentUserSlug ||= "";
     db.users ||= {};
     db.github ||= { owner: "", repo: "", branch: "main", token: "" };
+    db.auth ||= { accounts: [], session: null };
     return db;
   }
 
@@ -85,4 +86,3 @@
     resetUser
   };
 })();
-``
