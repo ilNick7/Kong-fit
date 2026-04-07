@@ -6,10 +6,10 @@
 
   <title>Kong Fit</title>
   <meta name="description" content="Kong Fit – web app minimal per schede di allenamento e storico workout." />
-  
+
+  <!-- CSS -->
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/main.css">
-
 </head>
 
 <body>
@@ -19,8 +19,7 @@
   ====================================================== -->
   <header id="app-header">
     <div class="logo">
-      <!-- logo in assets/ -->
-      <img src="assets/logo.svg" alt="Kong Fit logo" />
+      <img src="assets/logo.svg" alt="Kong Fit logo" style="width:28px;height:28px;" />
       <h1>Kong Fit</h1>
     </div>
 
@@ -30,7 +29,16 @@
       <button data-view="workout">Allenamento</button>
       <button data-view="history">Storico</button>
       <button data-view="settings">Impostazioni</button>
+      <!-- visibile solo se admin (gestito da JS) -->
+      <button data-view="admin" id="nav-admin">Admin</button>
     </nav>
+
+    <!-- Account bar (gestita da JS) -->
+    <div id="account-bar">
+      <span id="account-label">—</span>
+      <button id="switch-btn" type="button">Cambia</button>
+      <button id="logout-btn" type="button">Esci</button>
+    </div>
   </header>
 
 
@@ -40,15 +48,44 @@
   <main id="app">
 
     <!-- ======================
+         LOGIN (PIN)
+    ======================= -->
+    <section id="view-login" data-view-section>
+      <h2>Accesso</h2>
+      <p>Inserisci il PIN a 4 cifre per entrare.</p>
+
+      <form id="login-form">
+        <div>
+          <label for="pin-input">PIN</label>
+          <input
+            id="pin-input"
+            type="password"
+            inputmode="numeric"
+            maxlength="4"
+            placeholder="••••"
+            autocomplete="one-time-code"
+          />
+        </div>
+
+        <button class="primary" type="submit">Entra</button>
+      </form>
+
+      <p id="login-error" class="muted"></p>
+    </section>
+
+
+    <!-- ======================
          SETUP INIZIALE
     ======================= -->
     <section id="view-setup" data-view-section>
       <h2>Setup iniziale</h2>
+      <p class="muted">Scegli quante volte ti alleni (2–4). La scheda verrà impostata automaticamente.</p>
 
       <form id="setup-form">
         <div>
           <label for="user-slug">Nome utente</label>
           <input id="user-slug" type="text" placeholder="es. mattia" />
+          <p class="muted">Lo slug viene preso dall’account PIN e non è modificabile.</p>
         </div>
 
         <div>
@@ -56,11 +93,11 @@
           <select id="days-per-week">
             <option value="2">2 giorni</option>
             <option value="3">3 giorni</option>
-            <option value="4">4 giorni</option>
+            <option value="4" selected>4 giorni</option>
           </select>
         </div>
 
-        <button type="submit">Crea piano</button>
+        <button class="primary" type="submit">Crea piano</button>
       </form>
     </section>
 
@@ -77,8 +114,8 @@
       </p>
 
       <div id="home-actions">
-        <button data-action="start-workout">Inizia allenamento</button>
-        <button data-action="view-scheda">Vedi scheda</button>
+        <button class="primary" data-action="start-workout">Inizia allenamento</button>
+        <button data-action="view-scheda">Scheda</button>
         <button data-action="view-history">Storico</button>
       </div>
     </section>
@@ -110,16 +147,23 @@
           </select>
         </div>
 
+        <!-- (Opzionale: per ora il JS salva "oggi" automaticamente, ma lasciamo il campo pronto) -->
+        <div>
+          <label for="workout-date">Data (opzionale)</label>
+          <input id="workout-date" type="date" />
+          <p class="muted">Attualmente viene salvata la data di oggi automaticamente.</p>
+        </div>
+
         <div id="workout-exercises">
           <!-- esercizi e input set -->
         </div>
 
         <div>
           <label for="bodyweight">Peso corporeo (opz.)</label>
-          <input id="bodyweight" type="number" step="0.1" />
+          <input id="bodyweight" type="number" step="0.1" placeholder="es. 78.4" />
         </div>
 
-        <button type="submit">Salva allenamento</button>
+        <button class="primary" type="submit">Salva allenamento</button>
       </form>
     </section>
 
@@ -142,30 +186,48 @@
     <section id="view-settings" data-view-section>
       <h2>Impostazioni</h2>
 
-      <div>
+      <div class="item">
         <h3>Piano</h3>
-        <button id="reset-plan">Reset piano</button>
+        <p class="muted">Resetta piano e storico dell’utente corrente.</p>
+        <button id="reset-plan" class="danger" type="button">Reset piano</button>
       </div>
 
-      <div>
+      <div class="item" style="margin-top:12px;">
         <h3>GitHub Sync (opzionale)</h3>
 
-        <label>Owner</label>
-        <input type="text" id="gh-owner" />
+        <label for="gh-owner">Owner</label>
+        <input type="text" id="gh-owner" placeholder="es. ilnick7" />
 
-        <label>Repository</label>
-        <input type="text" id="gh-repo" />
+        <label for="gh-repo">Repository</label>
+        <input type="text" id="gh-repo" placeholder="es. Kong-fit" />
 
-        <label>Branch</label>
+        <label for="gh-branch">Branch</label>
         <input type="text" id="gh-branch" value="main" />
 
-        <label>Token</label>
-        <input type="password" id="gh-token" />
+        <label for="gh-token">Token</label>
+        <input type="password" id="gh-token" placeholder="ghp_..." />
 
-        <div>
-          <button id="gh-pull">Pull</button>
-          <button id="gh-push">Push</button>
+        <div style="margin-top:10px; display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap;">
+          <button id="gh-pull" type="button">Pull</button>
+          <button id="gh-push" class="primary" type="button">Push</button>
         </div>
+
+        <p class="muted" style="margin-top:10px;">
+          Nota: in questa versione il wiring dei bottoni GitHub può essere gestito in JS separatamente.
+        </p>
+      </div>
+    </section>
+
+
+    <!-- ======================
+         ADMIN (solo admin)
+    ======================= -->
+    <section id="view-admin" data-view-section>
+      <h2>Admin</h2>
+      <p class="muted">Area riservata. Qui verrà l’editor delle schede (solo admin).</p>
+
+      <div id="admin-panel" class="item">
+        <p class="muted">Coming soon: creazione/modifica schede.</p>
       </div>
     </section>
 
@@ -180,13 +242,14 @@
   </footer>
 
 
-  
-<script src="js/state.js"></script>
-<script src="js/templates.js"></script>
-<script src="js/github.js"></script>
-<script src="js/workout.js"></script>
-<script src="js/history.js"></script>
-<script src="js/app.js"></script>
+  <!-- JS (ordine importante) -->
+  <script src="js/state.js"></script>
+  <script src="js/templates.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/github.js"></script>
+  <script src="js/workout.js"></script>
+  <script src="js/history.js"></script>
+  <script src="js/app.js"></script>
 
 </body>
 </html>
