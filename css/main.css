@@ -137,6 +137,12 @@ button.danger{
   box-shadow: 0 -6px 24px rgba(0,0,0,.18);
 }
 
+
+home-hero{
+  padding-bottom: 20px;
+}
+
+
 /* spacing */
 .home-greeting{ margin-bottom: 6px; }
 .home-subtitle{ margin-bottom: 14px; color:#666; }
