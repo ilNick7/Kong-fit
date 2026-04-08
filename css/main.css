@@ -238,3 +238,89 @@ button {
   color: #9aa0b4;
   font-weight: 800;
 }
+
+/* ===============================
+   SPLASH / LOGIN
+================================ */
+
+.splash{
+  position: fixed;
+  inset: 0;
+  background: #1f3b0a; /* verde scuro come nel frame */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 48px 20px 32px;
+}
+
+/* contenuto centrale */
+.splash-content{
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 40px;
+}
+
+/* logo */
+.splash-logo{
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 48px;
+}
+
+.splash-logo img{
+  width: 60%;
+  height: 60%;
+  object-fit: contain;
+}
+
+/* form */
+.splash-form{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.splash-form input{
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.6);
+  background: transparent;
+  color: #ffffff;
+  font-size: 16px;
+  text-align: center;
+}
+
+.splash-form input::placeholder{
+  color: rgba(255,255,255,.6);
+}
+
+/* bottone entra */
+.splash-enter{
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: 999px;
+  border: none;
+  background: #ffffff;
+  color: #1f3b0a;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+/* claim */
+.splash-claim{
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #ffffff;
+}

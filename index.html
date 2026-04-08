@@ -15,30 +15,44 @@
 
 <main id="app">
 
+  
   <!-- ======================
-       LOGIN (PIN)
+       SCHERMATA DI APERTURA / LOGIN
   ======================= -->
-  <section id="view-login" data-view-section>
-    <div class="page">
-      <h2>Accesso</h2>
-      <p class="muted">Inserisci il PIN a 4 cifre</p>
+  <section id="view-login" data-view-section class="splash">
 
-      <form id="login-form" class="form">
-        <label for="pin-input">PIN</label>
+    <div class="splash-content">
+
+      <!-- LOGO -->
+      <div class="splash-logo">
+        <img src="assets/logo.svg" alt="Kong Fit logo">
+      </div>
+
+      <!-- INPUT PIN -->
+      <form id="login-form" class="splash-form">
         <input
           id="pin-input"
           type="password"
           inputmode="numeric"
           maxlength="4"
-          placeholder="••••"
+          placeholder="Inserisci codice..."
           autocomplete="one-time-code"
         />
-        <button class="primary" type="submit">Entra</button>
+
+        <button type="submit" class="splash-enter">
+          Entra
+        </button>
       </form>
 
-      <p id="login-error" class="muted"></p>
     </div>
+
+    <!-- CLAIM -->
+    <div class="splash-claim">
+      Vai Kong
+    </div>
+
   </section>
+
 
   <!-- ======================
        PROFILO UTENTE
