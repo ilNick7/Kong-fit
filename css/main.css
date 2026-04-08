@@ -1,6 +1,6 @@
-/* ======================================================
+/* ===============================
    RESET BASE
-====================================================== */
+================================ */
 * {
   box-sizing: border-box;
 }
@@ -9,7 +9,7 @@ body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   background: #0e0f14;
-  color: #f2f2f2;
+  color: #000;
 }
 
 h1, h2, h3 {
@@ -18,7 +18,7 @@ h1, h2, h3 {
 
 p {
   margin: 0;
-  color: #9aa0b4;
+  color: #666;
 }
 
 button {
@@ -26,59 +26,60 @@ button {
   cursor: pointer;
 }
 
-/* ======================================================
+/* ===============================
    VIEW HANDLING
-====================================================== */
+================================ */
 [data-view-section] {
   display: none;
 }
 
-/* ======================================================
+/* ===============================
    HOME / ALLENAMENTO
-====================================================== */
+================================ */
 
-/* HERO (immagine in alto) */
+/* HERO — livello 1 */
 .home-hero {
-  height: 320px;
-  background: #2b2b2b; /* placeholder */
   position: relative;
+  height: 320px;
+  background: #2b2b2b; /* placeholder immagine */
 }
 
-/* Pallino account */
+/* pallino account */
 .profile-dot {
   position: absolute;
   top: 16px;
   right: 16px;
   width: 44px;
   height: 44px;
-  border-radius: 999px;
+  border-radius: 50%;
   background: #ffffff;
   border: none;
 }
 
-/* CONTENITORE BIANCO */
+/* CARD BIANCA — livello 2 */
 .home-content {
+  position: relative;
+
+  /* sale sopra l'immagine */
+  margin-top: -30px;
+
   background: #ffffff;
-  color: #000000;
 
-  /* ✅ CURVA VISIBILE */
-  border-radius: 22px 22px 0 0;
+  /* angoli superiori tondi */
+  border-radius: 20px 20px 0 0;
 
-  /* ✅ DISTACCO REALE DALLA HERO */
-  margin-top: -64px;
+  /* spazio sopra il testo */
+  padding: 36px 22px 28px;
 
-  /* ✅ RESPIRO SOPRA AL CONTENUTO */
-  padding: 40px 22px 32px;
-
-  /* ✅ LIMITA LARGHEZZA */
+  /* larghezza mobile */
   max-width: 520px;
   margin-left: auto;
   margin-right: auto;
 }
 
-/* ======================================================
+/* ===============================
    TESTI HOME
-====================================================== */
+================================ */
 .home-greeting {
   font-size: 22px;
   font-weight: 800;
@@ -91,9 +92,9 @@ button {
   color: #666;
 }
 
-/* ======================================================
-   SCHEDE IN EVIDENZA (SCROLL ORIZZONTALE)
-====================================================== */
+/* ===============================
+   SCHEDE IN EVIDENZA (SCROLL)
+================================ */
 .home-cards-scroll {
   display: flex;
   gap: 12px;
@@ -118,20 +119,20 @@ button {
   font-weight: 700;
 }
 
-/* ======================================================
-   BLOCCO START ALLENAMENTO
-====================================================== */
+/* ===============================
+   START ALLENAMENTO
+================================ */
 .home-start {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 14px;
 
-  padding: 20px 0;
-  margin-bottom: 24px;
+  padding: 18px 0;
+  margin-bottom: 22px;
 
-  border-top: 1px solid #e0e0e0;
-  border-bottom: 1px solid #e0e0e0;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
 }
 
 .home-start-info small {
@@ -159,9 +160,9 @@ button {
   font-weight: 900;
 }
 
-/* ======================================================
-   BLOCCO OBIETTIVI
-====================================================== */
+/* ===============================
+   OBIETTIVI
+================================ */
 .home-goals {
   text-align: center;
   margin-bottom: 32px;
@@ -183,30 +184,18 @@ button {
   font-weight: 900;
 }
 
-/* ======================================================
-   SEZIONI ONE-PAGE (OBIETTIVI / SCHEDE)
-====================================================== */
+/* ===============================
+   SEZIONI ONE PAGE
+================================ */
 .home-anchor {
   margin-top: 32px;
   padding-top: 24px;
   border-top: 1px solid #eee;
 }
 
-#scheda-container {
-  display: grid;
-  gap: 12px;
-  margin-top: 14px;
-}
-
-#scheda-container .item {
-  background: #f5f5f5;
-  border-radius: 16px;
-  padding: 14px;
-}
-
-/* ======================================================
-   FOOTER TESTO "VAI KONG"
-====================================================== */
+/* ===============================
+   FOOTER TESTO
+================================ */
 .vai-kong {
   margin-top: 36px;
   padding: 36px 10px 60px;
@@ -216,9 +205,9 @@ button {
   letter-spacing: 1px;
 }
 
-/* ======================================================
-   BOTTOM NAV (NASCOSTA ALL'INIZIO)
-====================================================== */
+/* ===============================
+   BOTTOM NAV (scroll)
+================================ */
 .footer-nav {
   position: fixed;
   bottom: 0;
@@ -226,7 +215,6 @@ button {
   right: 0;
 
   background: rgba(22, 24, 34, 0.92);
-  backdrop-filter: blur(10px);
 
   transform: translateY(120%);
   transition: transform 0.25s ease;
