@@ -1,12 +1,16 @@
-/* ===============================
+/* ======================================================
    RESET BASE
-================================ */
+====================================================== */
 * {
   box-sizing: border-box;
 }
 
-body {
+html, body {
   margin: 0;
+  padding: 0;
+}
+
+body {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   background: #0e0f14;
   color: #000;
@@ -24,20 +28,126 @@ p {
 button {
   font-family: inherit;
   cursor: pointer;
+  border: none;
+  background: none;
 }
 
-/* ===============================
-   VIEW HANDLING
-================================ */
+/* ======================================================
+   VIEW HANDLING (SPA)
+====================================================== */
 [data-view-section] {
   display: none;
 }
 
-/* ===============================
-   HOME / ALLENAMENTO
-================================ */
+/* ======================================================
+   SPLASH / LOGIN (FULL SCREEN, CENTRATA)
+====================================================== */
 
-/* HERO — livello 1 */
+#view-login.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+
+  background: #1f3b0a;
+
+  /* CENTRATURA REALE */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* contenuto centrale */
+#view-login .splash-content {
+  width: 100%;
+  max-width: 320px;
+
+  margin: 0 auto;
+  padding: 0 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* logo */
+#view-login .splash-logo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 48px;
+}
+
+#view-login .splash-logo img {
+  width: 60%;
+  height: 60%;
+  object-fit: contain;
+}
+
+/* form */
+#view-login .splash-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* input pin */
+#view-login .splash-form input {
+  width: 100%;
+  padding: 16px 18px;
+
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.6);
+  background: transparent;
+
+  color: #ffffff;
+  font-size: 16px;
+  text-align: center;
+}
+
+#view-login .splash-form input::placeholder {
+  color: rgba(255,255,255,.6);
+}
+
+/* bottone entra */
+#view-login .splash-enter {
+  width: 100%;
+  padding: 16px 18px;
+
+  border-radius: 999px;
+  background: #ffffff;
+  color: #1f3b0a;
+
+  font-size: 16px;
+  font-weight: 800;
+}
+
+/* claim in basso */
+#view-login .splash-claim {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+/* ======================================================
+   HOME / ALLENAMENTO
+====================================================== */
+
+/* hero (livello 1) */
 .home-hero {
   position: relative;
   height: 320px;
@@ -49,14 +159,14 @@ button {
   position: absolute;
   top: 16px;
   right: 16px;
+
   width: 44px;
   height: 44px;
   border-radius: 50%;
   background: #ffffff;
-  border: none;
 }
 
-/* CARD BIANCA — livello 2 */
+/* card bianca (livello 2) */
 .home-content {
   position: relative;
 
@@ -65,21 +175,19 @@ button {
 
   background: #ffffff;
 
-  /* angoli superiori tondi */
+  /* bordi superiori tondi */
   border-radius: 20px 20px 0 0;
 
-  /* spazio sopra il testo */
+  /* spazio interno */
   padding: 36px 22px 28px;
 
-  /* larghezza mobile */
+  /* layout mobile */
   max-width: 520px;
   margin-left: auto;
   margin-right: auto;
 }
 
-/* ===============================
-   TESTI HOME
-================================ */
+/* testi */
 .home-greeting {
   font-size: 22px;
   font-weight: 800;
@@ -92,9 +200,7 @@ button {
   color: #666;
 }
 
-/* ===============================
-   SCHEDE IN EVIDENZA (SCROLL)
-================================ */
+/* schede in evidenza (scroll orizzontale) */
 .home-cards-scroll {
   display: flex;
   gap: 12px;
@@ -114,14 +220,13 @@ button {
   border-radius: 18px;
   color: #fff;
   padding: 14px;
+
   display: flex;
   align-items: flex-end;
   font-weight: 700;
 }
 
-/* ===============================
-   START ALLENAMENTO
-================================ */
+/* start allenamento */
 .home-start {
   display: flex;
   justify-content: space-between;
@@ -145,6 +250,7 @@ button {
   display: inline-block;
   margin-top: 10px;
   padding: 6px 14px;
+
   border-radius: 999px;
   border: 1px solid #999;
   font-size: 12px;
@@ -153,16 +259,15 @@ button {
 .home-start-btn {
   min-width: 110px;
   height: 46px;
+
   border-radius: 999px;
-  border: none;
   background: #6aff7a;
   color: #0b0c10;
+
   font-weight: 900;
 }
 
-/* ===============================
-   OBIETTIVI
-================================ */
+/* obiettivi */
 .home-goals {
   text-align: center;
   margin-bottom: 32px;
@@ -177,47 +282,46 @@ button {
   margin-top: 12px;
   min-width: 160px;
   padding: 12px 20px;
+
   border-radius: 999px;
-  border: none;
   background: #6aff7a;
   color: #0b0c10;
+
   font-weight: 900;
 }
 
-/* ===============================
-   SEZIONI ONE PAGE
-================================ */
+/* sezioni one-page */
 .home-anchor {
   margin-top: 32px;
   padding-top: 24px;
   border-top: 1px solid #eee;
 }
 
-/* ===============================
-   FOOTER TESTO
-================================ */
+/* footer testo */
 .vai-kong {
   margin-top: 36px;
   padding: 36px 10px 60px;
+
   text-align: center;
   font-size: 28px;
   font-weight: 900;
   letter-spacing: 1px;
 }
 
-/* ===============================
-   BOTTOM NAV (scroll)
-================================ */
+/* ======================================================
+   BOTTOM NAV (nascosta finché scrolli)
+====================================================== */
+
 .footer-nav {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
 
-  background: rgba(22, 24, 34, 0.92);
+  background: rgba(22,24,34,.92);
 
   transform: translateY(120%);
-  transition: transform 0.25s ease;
+  transition: transform .25s ease;
 }
 
 .footer-nav.is-visible {
@@ -227,14 +331,13 @@ button {
 .bottom-nav {
   max-width: 520px;
   margin: 0 auto;
+
   display: flex;
   justify-content: space-around;
   padding: 12px 16px;
 }
 
 .bottom-nav button {
-  background: none;
-  border: none;
   color: #9aa0b4;
   font-weight: 800;
 }
