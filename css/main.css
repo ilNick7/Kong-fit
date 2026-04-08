@@ -1,348 +1,252 @@
-:root{
-  --bg:#0e0f14;
-  --panel:#1d2030;
-  --text:#f2f2f2;
-  --muted:#9aa0b4;
-  --border:#2a2e42;
-
-  --primary:#6aff7a;
-  --danger:#ff5c5c;
-
-  --radius:16px;
-  --radiusBig:20px;
-
-  --font: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+/* ======================================================
+   RESET BASE
+====================================================== */
+* {
+  box-sizing: border-box;
 }
 
-body{
-  margin:0;
-  font-family:var(--font);
-  background:var(--bg);
-  color:var(--text);
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: #0e0f14;
+  color: #f2f2f2;
 }
 
-h1,h2,h3{ margin:0 0 .5em 0; }
-p{ margin:0 0 1em 0; }
-
-.muted{ color:var(--muted); }
-
-[data-view-section]{ display:none; }
-
-/* layout wrapper */
-.page{
-  max-width: 520px;
-  margin: 0 auto;
-  padding: 18px;
+h1, h2, h3 {
+  margin: 0;
 }
 
-/* inputs/buttons */
-label{ font-size:14px; color:var(--muted); display:block; margin-bottom:6px; }
-input, select{
-  width:100%;
-  padding:12px 12px;
-  border-radius: 14px;
-  border:1px solid var(--border);
-  background: rgba(255,255,255,.04);
-  color: var(--text);
-}
-input:focus, select:focus{ outline:none; border-color: rgba(106,255,122,.55); }
-
-button{
-  background: rgba(255,255,255,.06);
-  border:1px solid var(--border);
-  color: var(--text);
-  padding: 12px 14px;
-  border-radius: 999px;
-  font-weight: 650;
-}
-button:hover{ background: rgba(255,255,255,.10); }
-
-button.primary{
-  background: var(--primary);
-  border:none;
-  color:#0b0c10;
-}
-button.danger{
-  background: var(--danger);
-  border:none;
-  color:#fff;
+p {
+  margin: 0;
+  color: #9aa0b4;
 }
 
-/* generic card */
-.item{
-  background: rgba(255,255,255,.04);
-  border:1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  margin-top: 14px;
+button {
+  font-family: inherit;
+  cursor: pointer;
 }
 
-/* icon button */
-.icon-btn{
-  width:42px;
-  height:42px;
-  border-radius:999px;
-  padding:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+/* ======================================================
+   VIEW HANDLING
+====================================================== */
+[data-view-section] {
+  display: none;
 }
 
-/* ==========================
-   HOME (match sketch)
-========================== */
+/* ======================================================
+   HOME / ALLENAMENTO
+====================================================== */
 
-/* hero */
-
-.home-hero{
-  height: 320px;              /* hero più grande */
+/* HERO (immagine in alto) */
+.home-hero {
+  height: 320px;
+  background: #2b2b2b; /* placeholder */
   position: relative;
-  background: #2b2b2b;
-  overflow: hidden;
-
-  /* QUESTO È FONDAMENTALE */
-  padding-bottom: 60px;
 }
 
-.home-hero-img{
-  width:100%;
-  height:100%;
-  object-fit: cover;
-  display:block;
+/* Pallino account */
+.profile-dot {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: none;
 }
 
-/* white dot (account) */
-.profile-dot{
-  position:absolute;
-  top:16px;
-  right:16px;
-  width:44px;
-  height:44px;
-  border-radius:999px;
-  background:#fff;
-  border:none;
-  box-shadow: 0 8px 20px rgba(0,0,0,.25);
-}
+/* CONTENITORE BIANCO */
+.home-content {
+  background: #ffffff;
+  color: #000000;
 
-/* white content sheet – FIX SPACING & RADIUS */
-.home-content{
-  background: #fff;
-  color: #000;
-
-  /* curva percepibile */
+  /* ✅ CURVA VISIBILE */
   border-radius: 22px 22px 0 0;
 
-  /* sale sull’hero ma NON lo mangia */
-  margin-top: -60px;
+  /* ✅ DISTACCO REALE DALLA HERO */
+  margin-top: -64px;
 
-  /* spazio vero sopra al contenuto */
-  padding: 36px 22px 24px;
+  /* ✅ RESPIRO SOPRA AL CONTENUTO */
+  padding: 40px 22px 32px;
 
-  /* niente ombre aggressive */
+  /* ✅ LIMITA LARGHEZZA */
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-
-/* spacing */
-.home-greeting{ margin-bottom: 6px; margin-top: 6px; }
-.home-subtitle{ margin-bottom: 14px; color:#666; }
-
-/* horizontal scroll cards */
-.home-cards-scroll{
-  display:flex;
-  gap:12px;
-  overflow-x:auto;
-  padding-bottom: 8px;
-  margin-bottom: 18px;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-}
-.home-cards-scroll::-webkit-scrollbar{ height: 6px; }
-.home-cards-scroll::-webkit-scrollbar-thumb{ background: rgba(0,0,0,.15); border-radius:999px; }
-
-.home-card{
-  flex: 0 0 160px;              /* card width */
-  height: 110px;
-  border-radius: 18px;
-  background:#000;
-  color:#fff;
-  padding: 14px;
-  display:flex;
-  align-items:flex-end;
-  justify-content:flex-start;
-  scroll-snap-align: start;
-  position: relative;
-}
-.home-card span{ font-weight:700; }
-
-/* start block */
-.home-start{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:14px;
-  padding: 18px 0;
-  border-top:1px solid #ddd;
-  border-bottom:1px solid #ddd;
-  margin: 6px 0 18px;
-}
-
-.home-start-info small{
-  display:block;
-  margin-top:4px;
-  color:#666;
-}
-
-.home-badge{
-  display:inline-block;
-  margin-top:10px;
-  padding: 5px 12px;
-  border-radius: 999px;
-  border:1px solid #999;
-  font-size: 12px;
-}
-
-.home-start-btn{
-  min-width: 110px;
-  height: 46px;
-  border-radius: 999px;
-  border:none;
-  background: var(--primary);
-  color:#0b0c10;
-  font-weight:800;
-}
-
-/* goals block */
-.home-goals{
-  text-align:center;
-  padding-top: 4px;
-}
-.home-goals-btn{
-  margin-top:10px;
-  min-width: 160px;
-  border:none;
-  background: var(--primary);
-  color:#0b0c10;
-  font-weight:800;
-}
-
-/* anchors inside home */
-.home-anchor{
-  margin-top: 26px;
-  padding-top: 18px;
-  border-top: 1px solid #eee;
-}
-#scheda-container{
-  display:grid;
-  gap:12px;
-  margin-top: 12px;
-}
-#scheda-container .item{
-  background: rgba(0,0,0,.06);
-  border: 1px solid rgba(0,0,0,.08);
-  color:#000;
-}
-
-/* VAI KONG footer text inside home content */
-.vai-kong{
-  margin-top: 28px;
-  padding: 28px 10px 52px;
-  text-align:center;
-  font-weight: 900;
-  letter-spacing: 1px;
-  font-size: 28px;
-}
-
-/* ==========================
-   PROFILE
-========================== */
-.profile-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
+/* ======================================================
+   TESTI HOME
+====================================================== */
+.home-greeting {
+  font-size: 22px;
+  font-weight: 800;
   margin-bottom: 6px;
 }
 
-/* calendar */
-.calendar-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom:10px;
-}
-.calendar-weekdays,
-.calendar-grid{
-  display:grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap:6px;
-}
-.calendar-weekdays span{
-  text-align:center;
-  font-size:12px;
-  color:var(--muted);
-  padding: 6px 0;
-}
-.calendar-day, .calendar-blank{
-  height: 42px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: rgba(255,255,255,.04);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.calendar-day{ position:relative; }
-.calendar-day.has-workout::after{
-  content:"";
-  position:absolute;
-  bottom:6px;
-  width:6px;
-  height:6px;
-  border-radius:999px;
-  background: var(--primary);
-}
-.calendar-day.selected{
-  box-shadow: 0 0 0 2px rgba(106,255,122,.25);
-  border-color: rgba(106,255,122,.55);
+.home-subtitle {
+  font-size: 15px;
+  margin-bottom: 18px;
+  color: #666;
 }
 
-/* ==========================
-   Bottom nav (hidden until scroll)
-========================== */
-.footer-nav{
+/* ======================================================
+   SCHEDE IN EVIDENZA (SCROLL ORIZZONTALE)
+====================================================== */
+.home-cards-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  margin-bottom: 22px;
+}
+
+.home-cards-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.home-card {
+  flex: 0 0 160px;
+  height: 110px;
+  background: #000;
+  border-radius: 18px;
+  color: #fff;
+  padding: 14px;
+  display: flex;
+  align-items: flex-end;
+  font-weight: 700;
+}
+
+/* ======================================================
+   BLOCCO START ALLENAMENTO
+====================================================== */
+.home-start {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+
+  padding: 20px 0;
+  margin-bottom: 24px;
+
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.home-start-info small {
+  display: block;
+  margin-top: 6px;
+  color: #666;
+}
+
+.home-badge {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid #999;
+  font-size: 12px;
+}
+
+.home-start-btn {
+  min-width: 110px;
+  height: 46px;
+  border-radius: 999px;
+  border: none;
+  background: #6aff7a;
+  color: #0b0c10;
+  font-weight: 900;
+}
+
+/* ======================================================
+   BLOCCO OBIETTIVI
+====================================================== */
+.home-goals {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.home-goals p {
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+.home-goals-btn {
+  margin-top: 12px;
+  min-width: 160px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: none;
+  background: #6aff7a;
+  color: #0b0c10;
+  font-weight: 900;
+}
+
+/* ======================================================
+   SEZIONI ONE-PAGE (OBIETTIVI / SCHEDE)
+====================================================== */
+.home-anchor {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #eee;
+}
+
+#scheda-container {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+#scheda-container .item {
+  background: #f5f5f5;
+  border-radius: 16px;
+  padding: 14px;
+}
+
+/* ======================================================
+   FOOTER TESTO "VAI KONG"
+====================================================== */
+.vai-kong {
+  margin-top: 36px;
+  padding: 36px 10px 60px;
+  text-align: center;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+/* ======================================================
+   BOTTOM NAV (NASCOSTA ALL'INIZIO)
+====================================================== */
+.footer-nav {
   position: fixed;
+  bottom: 0;
   left: 0;
   right: 0;
-  bottom: 0;
-  background: rgba(22,24,34,.92);
-  border-top: 1px solid var(--border);
+
+  background: rgba(22, 24, 34, 0.92);
   backdrop-filter: blur(10px);
 
-  transform: translateY(110%);
-  opacity: 0;
-  transition: transform .22s ease, opacity .22s ease;
-  z-index: 50;
+  transform: translateY(120%);
+  transition: transform 0.25s ease;
 }
 
-.footer-nav.is-visible{
+.footer-nav.is-visible {
   transform: translateY(0);
-  opacity: 1;
 }
 
-.bottom-nav{
+.bottom-nav {
   max-width: 520px;
   margin: 0 auto;
-  display:flex;
+  display: flex;
   justify-content: space-around;
-  gap: 12px;
-  padding: 10px 14px 12px;
+  padding: 12px 16px;
 }
-.bottom-nav button{
-  background: transparent;
+
+.bottom-nav button {
+  background: none;
   border: none;
-  color: var(--muted);
+  color: #9aa0b4;
   font-weight: 800;
-  padding: 10px 14px;
 }
-.bottom-nav button:hover{ color: var(--text); }
