@@ -119,13 +119,22 @@ button.danger{
   box-shadow: 0 8px 20px rgba(0,0,0,.25);
 }
 
-/* white content sheet */
+/* white content sheet – FIX SPACING & RADIUS */
 .home-content{
   background:#fff;
   color:#000;
-  border-radius: var(--radiusBig) var(--radiusBig) 0 0; /* ≈20px */
-  margin-top: -28px; /* sopra l'hero */
-  padding: 22px;     /* più padding */
+
+  /* angoli ben percepibili */
+  border-radius: 20px 20px 0 0;
+
+  /* stacco dall'hero */
+  margin-top: -40px;
+
+  /* respiro interno */
+  padding: 28px 22px 22px;
+
+  /* separazione visiva */
+  box-shadow: 0 -6px 24px rgba(0,0,0,.18);
 }
 
 /* spacing */
