@@ -1,1 +1,1 @@
-
+<img src="assets/kong-fit_white.svg" alt="Kong Fit logo">
