@@ -48,7 +48,7 @@ button {
   inset: 0;
   z-index: 10000;
 
-  background: #1f3b0a;
+  /* background: #1f3b0a; */
 
   /* CENTRATURA REALE */
   display: flex;
