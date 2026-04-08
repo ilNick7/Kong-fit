@@ -1,104 +1,110 @@
 /* =========================================
-   LOGIN / SPLASH SCREEN – FIX DEFINITIVO
+   LOGIN / SPLASH – IMMUNE LAYOUT FIX
 ========================================= */
 
-#view-login.splash {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
+/* FULLSCREEN: non deve dipendere da #app, .page, max-width ecc. */
+#view-login.splash{
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;           /* stabile su mobile */
+  z-index: 99999 !important;
 
   background: #1f3b0a;
 
-  /* CENTRATURA REALE A SCHERMO */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  /* centratura perfetta */
+  display: grid !important;
+  place-items: center !important;
+
+  /* elimina qualsiasi eredità strana */
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-/* CONTENUTO CENTRALE */
-#view-login .splash-content {
-  width: 100%;
-  max-width: 320px;
+/* wrapper centrale */
+#view-login.splash .splash-content{
+  width: min(320px, 86vw) !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  padding: 0 20px;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
 }
 
-/* LOGO */
-#view-login .splash-logo {
+/* logo */
+#view-login.splash .splash-logo{
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: #ffffff;
+  background: #fff;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 
-  margin-bottom: 48px;
+  margin: 0 0 48px 0;
 }
 
-#view-login .splash-logo img {
+#view-login.splash .splash-logo img{
   width: 60%;
   height: 60%;
   object-fit: contain;
 }
 
-/* FORM */
-#view-login .splash-form {
+/* form */
+#view-login.splash .splash-form{
   width: 100%;
-  display: flex;
-  flex-direction: column;
+  display:flex;
+  flex-direction:column;
   gap: 20px;
 }
 
-/* INPUT */
-#view-login .splash-form input {
+#view-login.splash .splash-form input{
   width: 100%;
   padding: 16px 18px;
-
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.6);
+
+  border: 1px solid rgba(255,255,255,.65);
   background: transparent;
 
-  color: #ffffff;
+  color: #fff;
   font-size: 16px;
   text-align: center;
+
+  margin: 0 !important;              /* evita shift */
 }
 
-#view-login .splash-form input::placeholder {
-  color: rgba(255,255,255,.6);
+#view-login.splash .splash-form input::placeholder{
+  color: rgba(255,255,255,.65);
 }
 
-/* BOTTONE */
-#view-login .splash-enter {
+#view-login.splash .splash-enter{
   width: 100%;
   padding: 16px 18px;
-
   border-radius: 999px;
   border: none;
 
-  background: #ffffff;
+  background: #fff;
   color: #1f3b0a;
-
   font-size: 16px;
   font-weight: 800;
+
+  margin: 0 !important;
 }
 
-/* CLAIM IN BASSO */
-#view-login .splash-claim {
-  position: absolute;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%);
+/* claim fisso in basso */
+#view-login.splash .splash-claim{
+  position: fixed !important;
+  bottom: 28px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
 
+  color: #fff;
   font-size: 28px;
   font-weight: 900;
   letter-spacing: 1px;
-  color: #ffffff;
+
+  margin: 0 !important;
+  padding: 0 !important;
 }
