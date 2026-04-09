@@ -1,9 +1,8 @@
 /* Kong Fit - state.js
-   Gestione stato + localStorage + utente corrente
+   Stato globale + localStorage
 */
 (function () {
   const APP_KEY = "kongfit_v1";
-
   const KongFit = (window.KongFit = window.KongFit || {});
   KongFit.state = KongFit.state || {};
 
@@ -26,8 +25,13 @@
   function ensureShape(db) {
     db.currentUserSlug ||= "";
     db.users ||= {};
-    db.github ||= { owner: "", repo: "", branch: "main", token: "" };
+
+    // schede create dall'admin (condivise)
+    db.schede ||= [];
+
+    // auth
     db.auth ||= { accounts: [], session: null };
+
     return db;
   }
 
@@ -42,7 +46,11 @@
           templateId: "tpl-4",
           rotationIndex: 0
         },
-        workouts: [] // array di workout (più recenti davanti)
+        profile: {
+          weightKg: "",
+          heightCm: ""
+        },
+        workouts: []
       };
     }
     return db.users[slug];
@@ -63,26 +71,13 @@
     return db.users?.[slug] || null;
   }
 
-  function setCurrentUserSlug(db, slug) {
-    db.currentUserSlug = slug;
-    ensureUser(db, slug);
-    setDB(db);
-  }
-
-  function resetUser(db, slug) {
-    delete db.users[slug];
-    if (db.currentUserSlug === slug) db.currentUserSlug = "";
-    setDB(db);
-  }
-
   KongFit.state = {
     APP_KEY,
     nowISO,
     getDB,
     setDB,
+    ensureShape,
     ensureUser,
-    getCurrentUser,
-    setCurrentUserSlug,
-    resetUser
+    getCurrentUser
   };
 })();
