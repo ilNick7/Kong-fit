@@ -7,7 +7,15 @@
   <title>Kong Fit</title>
   <meta name="description" content="Kong Fit – Personal workout app" />
 
-  <!-- CSS -->
+  <!-- ======================
+       PWA
+  ======================= -->
+  <link rel="manifest" href="app/manifest.json">
+  <meta name="theme-color" content="#1f3b0a">
+
+  <!-- ======================
+       CSS
+  ======================= -->
   <link rel="stylesheet" href="css/main.css">
 </head>
 
@@ -333,7 +341,14 @@
 
 <script src="js/app.js"></script>
 
-
+<!-- =====================================================
+     SERVICE WORKER
+====================================================== -->
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("app/sw.js");
+  }
+</script>
 
 </body>
 </html>
