@@ -180,6 +180,109 @@
     </div>
   </section>
 
+
+  <!-- ======================
+       ADMIN
+  ======================= -->
+  <section id="view-admin" data-view-section>
+  
+    <!-- HERO (stessa home) -->
+    <div class="home-hero admin-hero">
+      <img src="assets/hero.jpg" alt="Hero" />
+  
+      <!-- account dot (iniziali dinamiche) -->
+      <button id="admin-profile-btn" class="profile-dot" aria-label="Profilo">
+        <span id="admin-profile-initials">US</span>
+      </button>
+    </div>
+  
+    <!-- CONTENUTO -->
+    <div class="home-content admin-content">
+  
+      <h2 class="home-greeting">Ciao Admin</h2>
+  
+      <p class="home-subtitle">Ultime schede modificate</p>
+  
+      <!-- cards schede recenti -->
+      <div class="admin-recent" id="admin-recent-schede">
+        <!-- riempito via JS -->
+      </div>
+  
+      <!-- CTA crea/modifica -->
+      <div class="admin-actions">
+        <div class="admin-action">
+          <h3>Crea nuova scheda</h3>
+          <p class="muted">Crea una nuova scheda</p>
+          <button class="admin-btn" id="admin-go-create">Crea</button>
+        </div>
+  
+        <div class="admin-action">
+          <h3>Modifica scheda</h3>
+          <p class="muted">Modifica una scheda esistente</p>
+          <button class="admin-btn" id="admin-go-edit">Modifica</button>
+        </div>
+      </div>
+  
+      <!-- ======================
+           CREA SCHEDA
+      ======================= -->
+      <div class="admin-section" id="admin-create-section">
+        <h3>Crea scheda</h3>
+  
+        <form id="create-scheda-form" class="admin-form">
+          <label for="scheda-name">Nome scheda</label>
+          <input id="scheda-name" type="text" placeholder="es. Upper A / Push / Full Body" required />
+  
+          <label for="scheda-desc">Gruppi muscolari (descrizione)</label>
+          <input id="scheda-desc" type="text" placeholder="es. Petto, schiena, spalle, braccia" />
+  
+          <div class="admin-form-divider"></div>
+  
+          <h4 class="admin-subtitle">Esercizi</h4>
+  
+          <!-- lista esercizi -->
+          <div id="exercise-list"></div>
+  
+          <!-- add -->
+          <button type="button" id="add-exercise" class="admin-add">
+            + Aggiungi esercizio
+          </button>
+  
+          <button type="submit" class="admin-submit">
+            Crea la scheda
+          </button>
+        </form>
+      </div>
+  
+      <!-- ======================
+           MODIFICA SCHEDA (BASE)
+      ======================= -->
+      <div class="admin-section" id="admin-edit-section">
+        <h3>Modifica scheda</h3>
+  
+        <div class="admin-form">
+          <label for="edit-select">Seleziona scheda</label>
+          <select id="edit-select"></select>
+  
+          <div class="admin-edit-actions">
+            <button type="button" id="load-scheda" class="admin-btn">Carica</button>
+            <button type="button" id="delete-scheda" class="admin-btn danger">Elimina</button>
+          </div>
+  
+          <p class="muted" style="margin-top:10px;">
+            Dopo aver caricato, modifica i campi nella sezione “Crea scheda” e premi “Salva modifiche”.
+          </p>
+  
+          <button type="button" id="save-changes" class="admin-submit">
+            Salva modifiche
+          </button>
+        </div>
+      </div>
+  
+    </div>
+  </section>
+
+
 </main>
 
 <!-- Bottom nav (inizialmente nascosta, appare solo scrollando) -->
@@ -197,6 +300,7 @@
 <script src="js/workout.js"></script>
 <script src="js/profile.js"></script>
 <script src="js/home.js"></script>
+<script src="js/admin.js"></script>
 <script src="js/app.js"></script>
 
 </body>
