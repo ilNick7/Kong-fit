@@ -103,8 +103,19 @@
     // wire profilo (close/switch/logout/calendar)
     KongFit.profile?.wireProfileUI?.();
 
-    // start
-    if(!getSession()) navigate("login");
-    else navigate("home");
-  });
+    
+   if (!getSession()) {
+     navigate("login");
+   } else {
+     const s = getSession();
+   
+     // ✅ ADMIN
+     if (s.slug === "admin") {
+       navigate("admin");
+     } 
+     // ✅ USER
+     else {
+       navigate("home");
+     }
+   });
 })();
