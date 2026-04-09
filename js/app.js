@@ -1,121 +1,119 @@
-/* Kong Fit - app.js
-   - Auth flow
-   - SPA views (login, home, profile, workout)
-   - Home render + bottom nav scroll behaviour
-*/
+/* ======================================================
+   Kong Fit - app.js
+   - Routing SPA
+   - Login PIN
+   - Redirect: admin -> admin view, user -> home view
+   - Hook: home.js, admin.js, workout.js, profile.js
+====================================================== */
 (function () {
   const KongFit = (window.KongFit = window.KongFit || {});
-  const { getDB, setDB, ensureUser, getCurrentUser } = KongFit.state;
+  const { getDB, setDB } = KongFit.state;
   const { getSession, loginWithPin, ensureAuth } = KongFit.auth;
 
-  function $ (sel){ return document.querySelector(sel); }
-  function $all(sel){ return Array.from(document.querySelectorAll(sel)); }
+  const $ = (q) => document.querySelector(q);
+  const $all = (q) => Array.from(document.querySelectorAll(q));
 
-  function hideAllViews(){
-    $all("[data-view-section]").forEach(v => v.style.display = "none");
+  function hideAllViews() {
+    $all("[data-view-section]").forEach(v => (v.style.display = "none"));
   }
 
-  function showView(name){
+  function showView(name) {
     hideAllViews();
     const el = document.getElementById(`view-${name}`);
-    if(el) el.style.display = "block";
+    if (el) el.style.display = "block";
     document.body.setAttribute("data-view", name);
   }
 
-  function guard(view){
-    const s = getSession();
-    if(!s && view !== "login") return "login";
-    return view;
-  }
+  function navigate(view) {
+    // guard: se non loggato -> login
+    const session = getSession();
+    if (!session && view !== "login") view = "login";
 
-  function navigate(view){
-    view = guard(view);
     showView(view);
 
-    if(view === "home"){
+    // hook per vista
+    if (view === "home") {
       KongFit.home?.renderHome?.();
       return;
     }
 
-    if(view === "admin"){
+    if (view === "admin") {
       KongFit.admin?.renderAdmin?.();
       return;
     }
 
-
-    if(view === "profile"){
-      KongFit.profile?.renderProfile?.();
+    if (view === "workout") {
+      KongFit.workout?.renderWorkoutView?.();
       return;
     }
 
-    if(view === "workout"){
-      KongFit.workout?.renderWorkoutView?.();
+    if (view === "profile") {
+      KongFit.profile?.renderProfile?.();
       return;
     }
   }
 
+  // expose
   KongFit.app = KongFit.app || {};
   KongFit.app.navigate = navigate;
 
-  function wireLogin(){
+  function wireLogin() {
     const form = $("#login-form");
     const pinInput = $("#pin-input");
     const err = $("#login-error");
-    if(!form || !pinInput) return;
+    if (!form || !pinInput) return;
 
     form.onsubmit = (ev) => {
       ev.preventDefault();
-      if(err) err.textContent = "";
+      if (err) err.textContent = "";
 
       const pin = (pinInput.value || "").trim();
       const res = loginWithPin(pin);
 
-      if(!res.ok){
-        if(err) err.textContent = res.reason || "PIN errato";
+      if (!res.ok) {
+        if (err) err.textContent = res.reason || "PIN errato";
         pinInput.value = "";
         pinInput.focus();
         return;
       }
 
       pinInput.value = "";
-      navigate("home");
+
+      // ✅ redirect in base all'account
+      const s = getSession();
+      if (s?.slug === "admin") navigate("admin");
+      else navigate("home");
     };
   }
 
-  function wireProfileButton(){
-    const btn = $("#profile-btn");
-    if(btn){
-      btn.addEventListener("click", () => navigate("profile"));
-    }
+  function wireProfileButton() {
+    const btnHome = $("#profile-btn");
+    if (btnHome) btnHome.addEventListener("click", () => navigate("profile"));
+
+    // Se in admin hai un bottone profilo diverso
+    const btnAdmin = $("#admin-profile-btn");
+    if (btnAdmin) btnAdmin.addEventListener("click", () => navigate("profile"));
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    // ensure auth in db
+    // ensure auth structure
     const db = ensureAuth(getDB());
     setDB(db);
 
     wireLogin();
     wireProfileButton();
 
-    // bottom nav show/hide
+    // wiring moduli optional
     KongFit.home?.wireBottomNav?.();
-
-    // wire profilo (close/switch/logout/calendar)
     KongFit.profile?.wireProfileUI?.();
 
-    
-   if (!getSession()) {
-     navigate("login");
-   } else {
-     const s = getSession();
-   
-     // ✅ ADMIN
-     if (s.slug === "admin") {
-       navigate("admin");
-     } 
-     // ✅ USER
-     else {
-       navigate("home");
-     }
-   });
+    // ✅ start route
+    const s = getSession();
+    if (!s) {
+      navigate("login");
+    } else {
+      if (s.slug === "admin") navigate("admin");
+      else navigate("home");
+    }
+  });
 })();
