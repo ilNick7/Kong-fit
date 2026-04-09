@@ -37,6 +37,12 @@
       return;
     }
 
+    if(view === "admin"){
+      KongFit.admin?.renderAdmin?.();
+      return;
+    }
+
+
     if(view === "profile"){
       KongFit.profile?.renderProfile?.();
       return;
