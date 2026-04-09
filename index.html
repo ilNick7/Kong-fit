@@ -22,7 +22,7 @@
 
     <div class="splash-content">
       <div class="splash-logo">
-        assets/kong-fit_white.svg
+        <img src="assets/kong-fit_white.svg" alt="Kong Fit logo">
       </div>
 
       <form id="login-form" class="splash-form">
@@ -48,7 +48,7 @@
   <section id="view-home" data-view-section>
 
     <div class="home-hero">
-      assets/hero.jpg
+      <img src="assets/hero.jpg" alt="Kong Fit logo">
 
       <button id="profile-btn" class="profile-dot" aria-label="Profilo">
         <span id="profile-initials">US</span>
@@ -107,7 +107,7 @@
 
     <!-- hero admin -->
     <div class="home-hero admin-hero">
-      assets/hero.jpg
+      <img src="assets/hero.jpg" alt="Kong Fit logo">
 
       <button id="admin-profile-btn" class="profile-dot" aria-label="Profilo">
         <span id="admin-profile-initials">US</span>
@@ -230,13 +230,69 @@
        PROFILO
   ====================================================== -->
   <section id="view-profile" data-view-section>
+  
     <div class="home-content">
+  
       <h2>Profilo</h2>
-      <p class="muted">Profilo utente (già funzionante)</p>
+  
+      <!-- DATI ACCOUNT -->
+      <div class="item">
+        <h3>Account</h3>
+  
+        <p>
+          <strong>Nome:</strong>
+          <span id="profile-username">—</span>
+        </p>
+  
+        <p>
+          <strong>Codice:</strong>
+          <span id="profile-code">—</span>
+        </p>
+      </div>
+  
+      <!-- DATI FISICI -->
+      <div class="item">
+        <h3>Dati fisici</h3>
+  
+        <label for="profile-weight">Peso (kg)</label>
+        <input
+          id="profile-weight"
+          type="number"
+          step="0.1"
+          placeholder="es. 78.5"
+        />
+  
+        <label for="profile-height" style="margin-top:10px;">
+          Altezza (cm)
+        </label>
+        <input
+          id="profile-height"
+          type="number"
+          placeholder="es. 178"
+        />
+  
+        <button id="save-profile" class="home-start-btn" style="margin-top:14px;">
+          Salva dati
+        </button>
+      </div>
+  
+      <!-- AZIONI -->
+      <div class="item">
+        <h3>Sessione</h3>
+  
+        <button id="switch-account" class="admin-btn">
+          Cambia account
+        </button>
+  
+        <button id="logout-account" class="admin-btn danger" style="margin-top:10px;">
+          Logout
+        </button>
+      </div>
+  
     </div>
+  
   </section>
 
-</main>
 
 
 <!-- =====================================================
