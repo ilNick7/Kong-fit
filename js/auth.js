@@ -1,25 +1,30 @@
 /* Kong Fit - auth.js
-   Login rapido con PIN 4 cifre + ruoli (admin/user)
-   Storage: localStorage (db kongfit_v1)
+   Login rapido con PIN 4 cifre + sessione
 */
 (function () {
   const KongFit = (window.KongFit = window.KongFit || {});
-  const { getDB, setDB, ensureUser } = KongFit.state;
+  const { getDB, setDB, ensureUser, ensureShape } = KongFit.state;
 
+  // Default accounts (puoi cambiarli quando vuoi)
   const DEFAULT_ACCOUNTS = [
-    { pin: "0000", slug: "admin", role: "admin", label: "Admin" },
-    { pin: "1111", slug: "mattia", role: "user", label: "Mattia" },
-    { pin: "2222", slug: "amico", role: "user", label: "Amico" }
+    { pin: "0000", slug: "admin", label: "Admin" },
+    { pin: "1111", slug: "mattia", label: "Mattia" },
+    // compat: gestisco sia christian che amico
+    { pin: "2222", slug: "christian", label: "Christian" }
   ];
 
   function ensureAuth(db) {
-    db.auth ||= {};
-    db.auth.accounts ||= [];
-    db.auth.session ||= null;
+    db = ensureShape(db);
 
-    // Se non ci sono account, inizializza i 3 di default
-    if (!db.auth.accounts.length) {
+    db.auth ||= { accounts: [], session: null };
+    db.auth.accounts ||= [];
+
+    // se vuoto, inizializza
+    if (db.auth.accounts.length === 0) {
       db.auth.accounts = DEFAULT_ACCOUNTS.map(a => ({ ...a }));
+    } else {
+      // se c'era "amico" in vecchie versioni, accetta comunque
+      // (non rimuoviamo nulla qui, solo compat)
     }
 
     return db;
@@ -47,22 +52,17 @@
     const db = ensureAuth(getDB());
     pin = normalizePin(pin);
 
-    if (!isValidPin(pin)) {
-      return { ok: false, reason: "PIN non valido (4 cifre)" };
-    }
+    if (!isValidPin(pin)) return { ok: false, reason: "PIN non valido" };
 
     const acc = findAccountByPin(db, pin);
-    if (!acc) {
-      return { ok: false, reason: "PIN errato" };
-    }
+    if (!acc) return { ok: false, reason: "PIN errato" };
 
-    // assicura esistenza user data (workouts/config)
+    // crea utente
     ensureUser(db, acc.slug);
-
     db.currentUserSlug = acc.slug;
+
     db.auth.session = {
       slug: acc.slug,
-      role: acc.role,
       label: acc.label || acc.slug,
       loggedAt: new Date().toISOString()
     };
@@ -76,32 +76,35 @@
     db.auth.session = null;
     db.currentUserSlug = "";
     setDB(db);
-    return true;
+  }
+
+  function switchAccount(pin) {
+    return loginWithPin(pin);
+  }
+
+  function getPinForSlug(slug) {
+    const db = ensureAuth(getDB());
+    const acc = db.auth.accounts.find(a => a.slug === slug);
+    // compat vecchia
+    if (!acc && slug === "amico") {
+      const acc2 = db.auth.accounts.find(a => a.slug === "christian");
+      return acc2?.pin || "••••";
+    }
+    return acc?.pin || "••••";
   }
 
   function isAdmin() {
     const s = getSession();
-    return !!s && s.role === "admin";
-  }
-
-  function getAccounts() {
-    const db = ensureAuth(getDB());
-    return db.auth.accounts.map(({ pin, ...safe }) => safe); // non esporre pin
-  }
-
-  // Usato per “passa ad admin” o cambio account in-app: basta reinserire PIN
-  function switchAccount(pin) {
-    return loginWithPin(pin);
+    return !!s && s.slug === "admin";
   }
 
   KongFit.auth = {
     ensureAuth,
     getSession,
-    getAccounts,
     loginWithPin,
     switchAccount,
     logout,
     isAdmin,
-    isValidPin
+    getPinForSlug
   };
 })();
