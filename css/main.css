@@ -40,31 +40,26 @@ button {
 }
 
 /* ======================================================
-   SPLASH / LOGIN — CENTRATURA PERFETTA
+   SPLASH / LOGIN — CENTRATURA PERFETTA (FIX DEFINITIVO)
 ====================================================== */
 
 #view-login.splash {
   position: fixed;
   inset: 0;
   z-index: 10000;
-
   background: #1f3b0a;
-
-  /* ✅ GRID A 3 RIGHE */
-  display: grid;
-  grid-template-rows: 1fr auto 1fr;
-  align-items: center;
-
-  padding: 0 20px;
 }
 
-/* CONTENUTO CENTRALE (riga centrale) */
+/* CONTENUTO CENTRALE — CENTRO VERO */
 #view-login .splash-content {
-  grid-row: 2;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 
   width: 100%;
   max-width: 320px;
-  margin: 0 auto;
+  padding: 0 20px;
 
   display: flex;
   flex-direction: column;
@@ -76,12 +71,11 @@ button {
 #view-login .splash-logo {
   width: 120px;
   height: 120px;
+  margin-bottom: 40px;
 
   display: flex;
   align-items: center;
   justify-content: center;
-
-  margin-bottom: 40px;
 }
 
 #view-login .splash-logo img {
@@ -129,18 +123,17 @@ button {
   font-weight: 800;
 }
 
-/* CLAIM (riga finale, NON influenza il centro) */
+/* CLAIM — SEMPRE IN BASSO */
 #view-login .splash-claim {
-  grid-row: 3;
-  align-self: end;
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
 
-  margin-bottom: 28px;
-
-  text-align: center;
+  color: #ffffff;
   font-size: 28px;
   font-weight: 900;
   letter-spacing: 1px;
-  color: #ffffff;
 }
 
 /* ======================================================
