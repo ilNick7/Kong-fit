@@ -307,3 +307,161 @@ button {
   font-weight: 900;
   letter-spacing: 1px;
 }
+
+
+/* ===============================
+   ADMIN UI
+================================ */
+.admin-content{
+  padding-bottom: 40px;
+}
+
+.admin-recent{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.admin-card{
+  height: 110px;
+  border-radius: 18px;
+  background: #000;
+  color: #fff;
+  padding: 14px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  font-weight: 800;
+}
+
+.admin-actions{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin: 18px 0 24px;
+  border-top: 1px solid #ddd;
+  padding-top: 18px;
+}
+
+.admin-action{
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 18px;
+}
+
+.admin-action h3{
+  margin: 0 0 6px 0;
+}
+
+.admin-btn{
+  margin-top: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 999px;
+  background: #1f3b0a;
+  color: #fff;
+  font-weight: 900;
+}
+
+.admin-btn.danger{
+  background: #ff5c5c;
+}
+
+.admin-section{
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid #eee;
+}
+
+.admin-form{
+  margin-top: 12px;
+}
+
+.admin-form input, .admin-form select{
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #000;
+}
+
+.admin-form label{
+  display:block;
+  font-size: 13px;
+  font-weight: 700;
+  margin: 12px 0 6px;
+  color: #333;
+}
+
+.admin-form-divider{
+  height: 1px;
+  background: #eee;
+  margin: 18px 0;
+}
+
+.admin-subtitle{
+  margin: 0 0 12px 0;
+}
+
+.exercise-row{
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
+  background: #fafafa;
+}
+
+.exercise-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.exercise-grid .full{
+  grid-column: 1 / -1;
+}
+
+.exercise-actions{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:10px;
+}
+
+.exercise-remove{
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #ff5c5c;
+  color: #fff;
+  font-weight: 900;
+}
+
+.admin-add{
+  width: 100%;
+  margin-top: 6px;
+  padding: 12px 16px;
+  border-radius: 999px;
+  background: #000;
+  color: #fff;
+  font-weight: 900;
+}
+
+.admin-submit{
+  width: 100%;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 999px;
+  background: #6aff7a;
+  color: #0b0c10;
+  font-weight: 900;
+}
+
+.admin-edit-actions{
+  display:flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+.admin-edit-actions .admin-btn{
+  width: 50%;
+  margin-top: 0;
+}
