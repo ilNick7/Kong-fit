@@ -56,32 +56,23 @@
     const wrap = $("#workout-exercises");
     if (!wrap) return;
 
-    wrap.innerHTML = (day.exercises || []).map(ex => {
-      const last = lastEntryForExercise(user, ex.id);
-      const hint = last?.sets?.length
-        ? last.sets.map(s => (s.kg != null && s.reps != null) ? `${s.kg}x${s.reps}` : (s.raw || "")).join(", ")
-        : "";
-
-      return `
-        <div class="item" style="margin-top:12px;">
-          <p style="font-weight:800; margin-bottom:6px; color:#000;">
-            ${escapeHtml(ex.name)} <span style="font-weight:600; color:#666;">(${ex.setsTarget}x ${escapeHtml(ex.repsTarget)})</span>
-          </p>
-
-          ${hint ? `<p style="margin:0 0 10px 0; color:#666; font-size:13px;">Ultimo: ${escapeHtml(hint)}</p>` : ""}
-
-          <label style="display:block; font-size:13px; font-weight:700; margin-bottom:6px; color:#333;">
-            Set (kg x reps, separati da virgola)
-          </label>
-          <input data-sets="${escapeHtml(ex.id)}" type="text" placeholder="es. 80x8, 80x7, 77.5x6" style="width:100%; padding:14px 16px; border-radius:14px; border:1px solid #ddd;">
-
-          <label style="display:block; font-size:13px; font-weight:700; margin:10px 0 6px; color:#333;">
-            Note (opzionale)
-          </label>
-          <input data-note="${escapeHtml(ex.id)}" type="text" placeholder="RIR, tecnica..." style="width:100%; padding:14px 16px; border-radius:14px; border:1px solid #ddd;">
-        </div>
-      `;
-    }).join("");
+    wrap.innerHTML = day.exercises.map(ex => {
+     const last = lastEntryForExercise(user, ex.id);
+     const hint = last?.sets?.length
+       ? last.sets.map(s => `${s.kg}x${s.reps}`).join(", ")
+       : "";
+   
+     return KongFit.workoutUI.createExerciseCard({
+       id: ex.id,
+       name: ex.name,
+       target: `${ex.setsTarget}x ${ex.repsTarget}`,
+       rest: ex.rest || 0,
+       last: hint
+     });
+   }).join("");
+   
+   // ✅ attiva UI avanzata
+   KongFit.workoutUI.enhanceWorkoutUI();
   }
 
   function renderWorkoutView() {
