@@ -1,24 +1,25 @@
 /* ======================================================
-   Kong Fit - profile.js (ADMIN SAFE)
-   - Nessun crash
-   - Logout sempre funzionante
-   - Admin separato da user
+   Kong Fit - profile.js (BULLETPROOF)
+   - Render automatico quando la view diventa visibile
+   - Admin e User separati
+   - Logout sempre disponibile
+   - ZERO schermi neri
 ====================================================== */
 (function () {
   const KongFit = (window.KongFit = window.KongFit || {});
   const { getDB } = KongFit.state;
   const { getSession, logout } = KongFit.auth;
 
-  const $ = (q) => document.querySelector(q);
+  const view = document.getElementById("view-profile");
 
   function renderProfile() {
     const session = getSession();
     if (!session) {
-      KongFit.app.navigate("login");
+      KongFit.app?.navigate?.("login");
       return;
     }
 
-    const container = $("#view-profile .home-content");
+    const container = view?.querySelector(".home-content");
     if (!container) return;
 
     // ADMIN
@@ -44,10 +45,11 @@
       `;
     }
 
-    $("#logout-btn")?.addEventListener("click", () => {
+    const logoutBtn = container.querySelector("#logout-btn");
+    logoutBtn?.addEventListener("click", () => {
       const db = getDB();
 
-      // ⚠️ SOLO per USER controlliamo allenamento attivo
+      // protezione SOLO per user
       if (session.slug !== "admin" && db.activeWorkout) {
         if (!confirm("Hai un allenamento in corso. Vuoi davvero uscire?")) {
           return;
@@ -55,9 +57,29 @@
       }
 
       logout();
-      KongFit.app.navigate("login");
+      KongFit.app?.navigate?.("login");
     });
   }
 
-  KongFit.profile = { renderProfile };
+  /* ======================================================
+     AUTO‑RENDER QUANDO LA VIEW DIVENTA VISIBILE
+     (questa è la chiave)
+  ====================================================== */
+  const observer = new MutationObserver(() => {
+    if (view && view.style.display !== "none") {
+      renderProfile();
+    }
+  });
+
+  if (view) {
+    observer.observe(view, {
+      attributes: true,
+      attributeFilter: ["style"]
+    });
+  }
+
+  // fallback manuale
+  KongFit.profile = {
+    renderProfile
+  };
 })();
