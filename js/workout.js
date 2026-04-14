@@ -1,7 +1,7 @@
 /* ======================================================
-   Kong Fit - workout.js (ACTIVE WORKOUT FLOW)
-   - Usa activeWorkout
-   - Riprende allenamento
+   Kong Fit - workout.js (STEP 3)
+   - Salvataggio progressivo (draft)
+   - Ripristino automatico
    - Termina allenamento
 ====================================================== */
 (function () {
@@ -25,12 +25,14 @@
 
     const scheda = (db.schede || []).find(s => s.id === active.schedaId);
     if (!scheda) {
-      alert("Scheda non trovata.");
       db.activeWorkout = null;
       setDB(db);
       KongFit.app.navigate("home");
       return;
     }
+
+    // init draft
+    active.draft ||= { sets: {}, bodyweight: null };
 
     $("#workout-title").textContent = scheda.name;
     $("#workout-subtitle").textContent = "Allenamento in corso";
@@ -47,6 +49,32 @@
     }).join("");
 
     KongFit.workoutUI.enhanceWorkoutUI();
+
+    // RIPRISTINO SET
+    Object.entries(active.draft.sets).forEach(([id, value]) => {
+      const input = document.querySelector(`input[data-sets="${id}"]`);
+      if (input) input.value = value;
+    });
+
+    // RIPRISTINO PESO
+    const bwInput = $("#bodyweight");
+    if (bwInput && active.draft.bodyweight != null) {
+      bwInput.value = active.draft.bodyweight;
+    }
+
+    // SALVATAGGIO PROGRESSIVO SET
+    wrap.addEventListener("input", (ev) => {
+      const input = ev.target.closest("input[data-sets]");
+      if (!input) return;
+      active.draft.sets[input.dataset.sets] = input.value;
+      setDB(db);
+    });
+
+    // SALVATAGGIO PESO
+    bwInput?.addEventListener("input", () => {
+      active.draft.bodyweight = Number(bwInput.value) || null;
+      setDB(db);
+    });
 
     // TERMINA ALLENAMENTO
     $("#end-workout-btn").onclick = () => {
