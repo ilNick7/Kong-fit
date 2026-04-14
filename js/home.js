@@ -1,17 +1,15 @@
 /* ======================================================
-   Kong Fit - home.js (UPDATED)
-   - Mostra nome utente (Mattia / Christian / User)
-   - Mostra SCHEDA ATTIVA (nome + descrizione)
-   - Bottone Start -> workout
+   Kong Fit - home.js (ACTIVE WORKOUT)
+   - Start nuovo allenamento
+   - Riprendi allenamento
+   - Scelta scheda
 ====================================================== */
 (function () {
   const KongFit = (window.KongFit = window.KongFit || {});
-  const { getDB } = KongFit.state;
+  const { getDB, setDB } = KongFit.state;
   const { getSession } = KongFit.auth;
 
   const $ = (q) => document.querySelector(q);
-
-  /* ---------------- USER INFO ---------------- */
 
   function userInfoFromSession(session) {
     const map = {
@@ -22,33 +20,12 @@
     return map[session?.slug] || { name: "User", initials: "US" };
   }
 
-  /* ---------------- DATE ---------------- */
-
-  function pad2(n) {
-    return String(n).padStart(2, "0");
-  }
-
-  function formatDateIT(date = new Date()) {
-    const giorni = ["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"];
-    return `${giorni[date.getDay()]} ${date.getDate()}/${pad2(date.getMonth()+1)}/${date.getFullYear()}`;
-  }
-
-  /* ---------------- ACTIVE SCHEDA ---------------- */
-
   function getActiveScheda(db) {
-    const schede = db.schede || [];
-    if (schede.length === 0) return null;
-
     if (db.activeSchedaId) {
-      const found = schede.find(s => s.id === db.activeSchedaId);
-      if (found) return found;
+      return (db.schede || []).find(s => s.id === db.activeSchedaId);
     }
-
-    // fallback: prima scheda
-    return schede[0];
+    return (db.schede || [])[0] || null;
   }
-
-  /* ---------------- MAIN RENDER ---------------- */
 
   function renderHome() {
     const db = getDB();
@@ -57,52 +34,79 @@
 
     const info = userInfoFromSession(session);
 
-    // saluto
-    const nameEl = $("#home-username");
-    if (nameEl) nameEl.textContent = info.name;
+    $("#home-username").textContent = info.name;
+    $("#profile-initials").textContent = info.initials;
 
-    // iniziali account
-    const initialsEl = $("#profile-initials");
-    if (initialsEl) initialsEl.textContent = info.initials;
-
-    // data
-    const dateEl = $("#home-date");
-    if (dateEl) dateEl.textContent = formatDateIT(new Date());
-
-    // scheda attiva
     const scheda = getActiveScheda(db);
-    const schedaNameEl = $("#home-scheda-name");
-    const schedaDescEl = $("#home-scheda-desc");
+    $("#home-scheda-name").textContent = scheda?.name || "Nessuna scheda";
+    $("#home-scheda-desc").textContent = scheda?.desc || "";
 
-    if (scheda) {
-      if (schedaNameEl) schedaNameEl.textContent = scheda.name;
-      if (schedaDescEl) schedaDescEl.textContent = scheda.desc || "";
-    } else {
-      if (schedaNameEl) schedaNameEl.textContent = "Nessuna scheda";
-      if (schedaDescEl) schedaDescEl.textContent = "Contatta l'admin per crearne una.";
-    }
-
-    // start -> workout
     const startBtn = $("#home-start-btn");
-    if (startBtn) {
-      startBtn.onclick = () => {
-        if (!scheda) {
-          alert("Nessuna scheda disponibile.");
-          return;
-        }
-        KongFit.app.navigate("workout");
-      };
+    const resumeBtn = $("#home-resume-btn");
+
+    // 🔁 Allenamento attivo?
+    if (db.activeWorkout) {
+      startBtn.classList.add("hidden");
+      resumeBtn.classList.remove("hidden");
+    } else {
+      startBtn.classList.remove("hidden");
+      resumeBtn.classList.add("hidden");
     }
 
-    // CTA obiettivi (placeholder)
-    const goalsBtn = $("#home-goals-btn");
-    if (goalsBtn) {
-      goalsBtn.onclick = () => {
-        alert("Sezione obiettivi in arrivo 💪");
+    // START NUOVO
+    startBtn.onclick = () => {
+      if (!scheda) {
+        alert("Nessuna scheda disponibile.");
+        return;
+      }
+
+      db.activeWorkout = {
+        schedaId: scheda.id,
+        schedaName: scheda.name,
+        startedAt: new Date().toISOString()
       };
-    }
+      setDB(db);
+
+      KongFit.app.navigate("workout");
+    };
+
+    // RIPRENDI
+    resumeBtn.onclick = () => {
+      KongFit.app.navigate("workout");
+    };
+
+    // CAMBIA SCHEDA
+    $("#change-scheda-btn").onclick = () => {
+      openSchedaSelect(db);
+    };
+  }
+
+  /* ---------- MODAL SELEZIONE SCHEDA ---------- */
+
+  function openSchedaSelect(db) {
+    const modal = $("#scheda-select-modal");
+    const list = $("#scheda-select-list");
+    modal.classList.remove("hidden");
+
+    list.innerHTML = (db.schede || []).map(s => `
+      <button class="admin-btn" data-id="${s.id}">
+        ${s.name}
+      </button>
+    `).join("");
+
+    list.onclick = (ev) => {
+      const btn = ev.target.closest("button[data-id]");
+      if (!btn) return;
+      db.activeSchedaId = btn.dataset.id;
+      setDB(db);
+      modal.classList.add("hidden");
+      renderHome();
+    };
+
+    $("#close-scheda-select").onclick = () => {
+      modal.classList.add("hidden");
+    };
   }
 
   KongFit.home = { renderHome };
-
 })();
