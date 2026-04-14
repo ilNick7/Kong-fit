@@ -572,3 +572,114 @@ button {
   width: 50%;
   margin-top: 0;
 }
+
+
+/* ======================================================
+   WORKOUT – COLLASSABLE + TIMER
+====================================================== */
+
+.workout-header{
+  margin-bottom: 16px;
+}
+
+.workout-list{
+  display: grid;
+  gap: 14px;
+}
+
+/* card esercizio */
+.workout-ex{
+  border: 1px solid #eee;
+  border-radius: 18px;
+  background: #fafafa;
+  overflow: hidden;
+}
+
+/* header cliccabile */
+.workout-ex-head{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  cursor: pointer;
+}
+
+.workout-ex-head h3{
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.workout-ex-head span{
+  font-size: 13px;
+  color: #666;
+}
+
+/* body collassabile */
+.workout-ex-body{
+  padding: 14px 16px;
+  border-top: 1px solid #eee;
+  display: none;
+}
+
+.workout-ex.open .workout-ex-body{
+  display: block;
+}
+
+/* input set */
+.workout-ex-body input{
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+}
+
+/* ultimo allenamento */
+.workout-last{
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+/* timer */
+.workout-timer{
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.timer-display{
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.timer-btn{
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #1f3b0a;
+  color: #fff;
+  font-weight: 800;
+}
+
+.timer-btn.running{
+  background: #ff5c5c;
+}
+
+/* peso corporeo */
+.workout-bw{
+  margin: 18px 0;
+}
+
+.workout-bw label{
+  display:block;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+/* submit */
+.workout-submit{
+  width: 100%;
+  margin-top: 10px;
+}
