@@ -7,17 +7,12 @@
   <title>Kong Fit</title>
   <meta name="description" content="Kong Fit – Personal workout app" />
 
-  <!-- ======================
-       PWA
-  ======================= -->
+  <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1f3b0a">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-
-  <!-- ======================
-       CSS
-  ======================= -->
+  <!-- CSS -->
   <link rel="stylesheet" href="css/main.css">
 </head>
 
@@ -29,10 +24,9 @@
        LOGIN / SPLASH
   ====================================================== -->
   <section id="view-login" data-view-section class="splash">
-
     <div class="splash-content">
       <div class="splash-logo">
-        <img src="assets/kong-fit_white.svg" alt="Kong Fit logo">
+        <img src="assets/kong-fit_white.svg" alt="Kong Fit">
       </div>
 
       <form id="login-form" class="splash-form">
@@ -42,7 +36,6 @@
           inputmode="numeric"
           maxlength="4"
           placeholder="Inserisci codice..."
-          autocomplete="one-time-code"
         />
         <button type="submit" class="splash-enter">Entra</button>
       </form>
@@ -58,9 +51,9 @@
   <section id="view-home" data-view-section>
 
     <div class="home-hero">
-      <img src="assets/hero.jpg" alt="Kong Fit logo">
+      <img src="assets/hero.jpg" alt="Hero">
 
-      <button id="profile-btn" class="profile-dot" aria-label="Profilo">
+      <button id="profile-btn" class="profile-dot">
         <span id="profile-initials">US</span>
       </button>
     </div>
@@ -71,38 +64,34 @@
         Ciao <span id="home-username">—</span>
       </h2>
 
-      <p class="home-subtitle">Allenamenti in evidenza</p>
+      <!-- ✅ NEW: SCHEDA ATTIVA -->
+      <p class="home-subtitle">Scheda attiva</p>
 
-      <!-- schede recenti -->
-      <div class="home-cards-scroll" id="recent-schede"></div>
+      <div class="home-active-scheda" id="home-active-scheda-card">
+        <h3 id="home-scheda-name">—</h3>
+        <p class="muted" id="home-scheda-desc">—</p>
+      </div>
+      <!-- ✅ END NEW -->
 
-      <!-- start -->
+      <!-- START -->
       <div class="home-start">
         <div class="home-start-info">
           <strong>Inizia allenamento</strong>
           <small id="home-date">—</small>
-          <span class="home-badge" id="home-active-scheda">—</span>
         </div>
 
-        <button class="home-start-btn" id="home-start-btn">Start</button>
+        <button class="home-start-btn" id="home-start-btn">
+          Start
+        </button>
       </div>
 
-      <!-- obiettivi -->
+      <!-- OBIETTIVI -->
       <div class="home-goals">
         <strong>Visualizza obiettivi</strong>
         <p class="muted">Rimani costante, un set alla volta.</p>
-        <button class="home-goals-btn" id="home-goals-btn">Dacci dentro</button>
-      </div>
-
-      <!-- sezioni one-page -->
-      <div id="section-obiettivi" class="home-anchor">
-        <h3>Obiettivi</h3>
-        <p class="muted">Sezione obiettivi (coming soon)</p>
-      </div>
-
-      <div id="section-schede" class="home-anchor">
-        <h3>Schede</h3>
-        <p class="muted">Le tue schede appariranno qui.</p>
+        <button class="home-goals-btn" id="home-goals-btn">
+          Dacci dentro
+        </button>
       </div>
 
       <div class="vai-kong">VAI KONG</div>
@@ -115,11 +104,10 @@
   ====================================================== -->
   <section id="view-admin" data-view-section>
 
-    <!-- hero admin -->
     <div class="home-hero admin-hero">
-      <img src="assets/hero.jpg" alt="Kong Fit logo">
+      <img src="assets/hero.jpg" alt="Hero admin">
 
-      <button id="admin-profile-btn" class="profile-dot" aria-label="Profilo">
+      <button id="admin-profile-btn" class="profile-dot">
         <span id="admin-profile-initials">US</span>
       </button>
     </div>
@@ -127,46 +115,39 @@
     <div class="home-content admin-content" id="admin-root" data-mode="clean">
 
       <h2 class="home-greeting">Ciao Admin</h2>
-
       <p class="home-subtitle">Ultime schede modificate</p>
 
-      <!-- schede recenti -->
       <div class="admin-recent" id="admin-recent-schede"></div>
 
-      <!-- CTA -->
       <div class="admin-actions">
         <div class="admin-action">
           <h3>Crea nuova scheda</h3>
-          <p class="muted">Crea una nuova scheda</p>
           <button class="admin-btn" id="admin-go-create">Crea</button>
         </div>
 
         <div class="admin-action">
           <h3>Modifica scheda</h3>
-          <p class="muted">Modifica una scheda esistente</p>
           <button class="admin-btn" id="admin-go-edit">Modifica</button>
         </div>
       </div>
 
-      <!-- ======================
-           CREA SCHEDA
-      ======================= -->
+      <!-- CREA -->
       <div class="admin-section" id="admin-create-section">
         <h3>Crea scheda</h3>
-        <button type="button" class="admin-back" id="admin-back-from-create">← Indietro</button>
+        <button type="button" class="admin-back" id="admin-back-from-create">
+          ← Indietro
+        </button>
 
         <form id="create-scheda-form" class="admin-form">
+          <label>Nome scheda</label>
+          <input id="scheda-name" type="text" required>
 
-          <label for="scheda-name">Nome scheda</label>
-          <input id="scheda-name" type="text" placeholder="es. Upper A" required />
-
-          <label for="scheda-desc">Gruppi muscolari</label>
-          <input id="scheda-desc" type="text" placeholder="Petto, schiena, spalle" />
+          <label>Gruppi muscolari</label>
+          <input id="scheda-desc" type="text">
 
           <div class="admin-form-divider"></div>
 
-          <h4 class="admin-subtitle">Esercizi</h4>
-
+          <h4>Esercizi</h4>
           <div id="exercise-list"></div>
 
           <button type="button" id="add-exercise" class="admin-add">
@@ -179,25 +160,25 @@
         </form>
       </div>
 
-      <!-- ======================
-           MODIFICA SCHEDA
-      ======================= -->
+      <!-- MODIFICA -->
       <div class="admin-section" id="admin-edit-section">
         <h3>Modifica scheda</h3>
-        <button type="button" class="admin-back" id="admin-back-from-edit">← Indietro</button>
+        <button type="button" class="admin-back" id="admin-back-from-edit">
+          ← Indietro
+        </button>
 
         <div class="admin-form">
-          <label for="edit-select">Seleziona scheda</label>
+          <label>Seleziona scheda</label>
           <select id="edit-select"></select>
 
           <div class="admin-edit-actions">
-            <button type="button" id="load-scheda" class="admin-btn">Carica</button>
-            <button type="button" id="delete-scheda" class="admin-btn danger">Elimina</button>
+            <button type="button" id="load-scheda" class="admin-btn">
+              Carica
+            </button>
+            <button type="button" id="delete-scheda" class="admin-btn danger">
+              Elimina
+            </button>
           </div>
-
-          <button type="button" id="save-changes" class="admin-submit">
-            Salva modifiche
-          </button>
         </div>
       </div>
 
@@ -208,157 +189,84 @@
   <!-- =====================================================
        WORKOUT
   ====================================================== -->
-  <!-- =====================================================
-     WORKOUT / NUOVO ALLENAMENTO (USER)
-====================================================== -->
-<section id="view-workout" data-view-section>
+  <section id="view-workout" data-view-section>
+    <div class="home-content">
 
-  <div class="home-content">
-
-    <!-- HEADER -->
-    <div class="workout-header">
-      <h2 id="workout-title">Allenamento</h2>
-      <p class="muted" id="workout-subtitle">—</p>
-    </div>
-
-    <form id="workout-form">
-
-      <!-- lista esercizi -->
-      <div id="workout-exercises" class="workout-list"></div>
-
-      <!-- peso corporeo -->
-      <div class="workout-bw">
-        <label for="bodyweight">Peso corporeo (kg)</label>
-        <input
-          id="bodyweight"
-          type="number"
-          step="0.1"
-          placeholder="es. 78.5"
-        />
+      <div class="workout-header">
+        <h2 id="workout-title">Allenamento</h2>
+        <p class="muted" id="workout-subtitle">—</p>
       </div>
 
-      <!-- submit -->
-      <button type="submit" class="home-start-btn workout-submit">
-        Salva allenamento
-      </button>
+      <form id="workout-form">
+        <div id="workout-exercises"></div>
 
-    </form>
+        <div class="workout-bw">
+          <label>Peso corporeo (kg)</label>
+          <input id="bodyweight" type="number" step="0.1">
+        </div>
 
-  </div>
-</section>
+        <button type="submit" class="home-start-btn">
+          Salva allenamento
+        </button>
+      </form>
+    </div>
+  </section>
 
 
   <!-- =====================================================
        PROFILO
   ====================================================== -->
   <section id="view-profile" data-view-section>
-  
     <div class="home-content">
-  
       <h2>Profilo</h2>
-  
-      <!-- DATI ACCOUNT -->
-      <div class="item">
-        <h3>Account</h3>
-  
-        <p>
-          <strong>Nome:</strong>
-          <span id="profile-username">—</span>
-        </p>
-  
-        <p>
-          <strong>Codice:</strong>
-          <span id="profile-code">—</span>
-        </p>
-      </div>
-  
-      <!-- DATI FISICI -->
-      <div class="item">
-        <h3>Dati fisici</h3>
-  
-        <label for="profile-weight">Peso (kg)</label>
-        <input
-          id="profile-weight"
-          type="number"
-          step="0.1"
-          placeholder="es. 78.5"
-        />
-  
-        <label for="profile-height" style="margin-top:10px;">
-          Altezza (cm)
-        </label>
-        <input
-          id="profile-height"
-          type="number"
-          placeholder="es. 178"
-        />
-  
-        <button id="save-profile" class="home-start-btn" style="margin-top:14px;">
-          Salva dati
-        </button>
-      </div>
-  
-      <!-- AZIONI -->
-      <div class="item">
-        <h3>Sessione</h3>
-  
-        <button id="switch-account" class="admin-btn">
-          Cambia account
-        </button>
-  
-        <button id="logout-account" class="admin-btn danger" style="margin-top:10px;">
-          Logout
-        </button>
-      </div>
-  
+      <p class="muted">Profilo utente</p>
     </div>
-  
   </section>
 
-
+</main>
 
 <!-- =====================================================
      MODAL DETTAGLIO SCHEDA (ADMIN)
 ====================================================== -->
-<div id="scheda-modal" class="modal hidden" aria-hidden="true">
+<div id="scheda-modal" class="modal hidden">
   <div class="modal-card">
 
     <div class="modal-head">
       <h3 id="modal-title">Scheda</h3>
-      <button type="button" id="modal-close" class="icon-btn">✕</button>
+      <button type="button" id="modal-close">✕</button>
     </div>
 
     <p class="muted" id="modal-desc"></p>
-
-    <div id="modal-exercises" class="modal-list"></div>
+    <div id="modal-exercises"></div>
 
     <div class="modal-actions">
-      <button type="button" id="modal-edit" class="admin-btn">Modifica</button>
-      <button type="button" id="modal-ok" class="admin-submit">Chiudi</button>
+      <!-- ✅ NEW -->
+      <button type="button" id="modal-set-active" class="admin-submit">
+        Imposta come scheda attiva
+      </button>
+
+      <button type="button" id="modal-edit" class="admin-btn">
+        Modifica
+      </button>
+      <button type="button" id="modal-ok" class="admin-submit">
+        Chiudi
+      </button>
     </div>
   </div>
 </div>
 
 
-<!-- =====================================================
-     JS
-====================================================== -->
-
+<!-- JS -->
 <script src="js/state.js"></script>
 <script src="js/templates.js"></script>
 <script src="js/auth.js"></script>
-
 <script src="js/profile.js"></script>
 <script src="js/home.js"></script>
 <script src="js/admin.js"></script>
 <script src="js/workout-ui.js"></script>
 <script src="js/workout.js"></script>
-
 <script src="js/app.js"></script>
 
-<!-- =====================================================
-     SERVICE WORKER
-====================================================== -->
 <script>
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js");
