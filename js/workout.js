@@ -1,24 +1,23 @@
 /* ======================================================
-   Kong Fit - workout.js (DA ZERO)
-   - Render allenamento dal template (2/3/4 giorni)
-   - Log set per esercizio (kg x reps)
-   - Salvataggio in localStorage -> db.users[slug].workouts[]
-   - Avanza rotazione
+   Kong Fit - workout.js (UPDATED & FINAL)
+   - Usa le SCHEDE create dall'admin (db.schede)
+   - Esercizi collassabili + timer (via workout-ui.js)
+   - Salvataggio allenamento user
 ====================================================== */
 (function () {
   const KongFit = (window.KongFit = window.KongFit || {});
   const { getDB, setDB, getCurrentUser } = KongFit.state;
   const { getSession } = KongFit.auth;
-  const { getTemplate } = KongFit.templates;
 
   const $ = (q) => document.querySelector(q);
+
+  /* ---------------- HELPERS ---------------- */
 
   function todayISO() {
     return new Date().toISOString().slice(0, 10);
   }
 
   function parseSets(raw) {
-    // formato: "80x8, 80x7, 77.5x6"
     if (!raw) return [];
     return raw
       .split(",")
@@ -26,19 +25,28 @@
       .filter(Boolean)
       .map(token => {
         const m = token.replace(/\s/g, "").match(/^([0-9]+(\.[0-9]+)?)x([0-9]+)$/i);
-        if (!m) return { kg: null, reps: null, raw: token };
+        if (!m) return { raw: token };
         return { kg: Number(m[1]), reps: Number(m[3]) };
       });
   }
 
-  function getNextDay(user) {
-    const tpl = getTemplate(user.config.templateId);
-    const idx = (user.config.rotationIndex || 0) % tpl.days.length;
-    return { tpl, day: tpl.days[idx], idx };
+  function escapeHtml(s) {
+    return String(s ?? "").replace(/[&<>"']/g, c => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;",
+      '"': "&quot;", "'": "&#039;"
+    }[c]));
+  }
+
+  /* ---------------- ADMIN SCHEDA ---------------- */
+
+  function getActiveAdminScheda(db) {
+    const schede = db.schede || [];
+    if (schede.length === 0) return null;
+    // per ora usiamo l'ultima modificata (in testa)
+    return schede[0];
   }
 
   function lastEntryForExercise(user, exerciseId) {
-    // cerca nel workout più recente che contiene quell'esercizio
     for (const w of (user.workouts || [])) {
       const e = (w.entries || []).find(x => x.exerciseId === exerciseId);
       if (e) return e;
@@ -46,112 +54,128 @@
     return null;
   }
 
-  function escapeHtml(s) {
-    return String(s ?? "").replace(/[&<>"']/g, c => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[c]));
-  }
+  /* ---------------- RENDER ESERCIZI ---------------- */
 
-  function renderExercises(user, day) {
+  function renderExercisesFromScheda(user, scheda) {
     const wrap = $("#workout-exercises");
     if (!wrap) return;
 
-    wrap.innerHTML = day.exercises.map(ex => {
-     const last = lastEntryForExercise(user, ex.id);
-     const hint = last?.sets?.length
-       ? last.sets.map(s => `${s.kg}x${s.reps}`).join(", ")
-       : "";
-   
-     return KongFit.workoutUI.createExerciseCard({
-       id: ex.id,
-       name: ex.name,
-       target: `${ex.setsTarget}x ${ex.repsTarget}`,
-       rest: ex.rest || 0,
-       last: hint
-     });
-   }).join("");
-   
-   // ✅ attiva UI avanzata
-   KongFit.workoutUI.enhanceWorkoutUI();
+    wrap.innerHTML = (scheda.exercises || []).map((ex, i) => {
+      const exId = `${scheda.id}_${i}`;
+      const last = lastEntryForExercise(user, exId);
+      const hint = last?.sets?.length
+        ? last.sets.map(s =>
+            (s.kg != null && s.reps != null)
+              ? `${s.kg}x${s.reps}`
+              : (s.raw || "")
+          ).join(", ")
+        : "";
+
+      return KongFit.workoutUI.createExerciseCard({
+        id: exId,
+        name: escapeHtml(ex.name),
+        target: `${ex.sets}x ${escapeHtml(ex.reps)}`,
+        rest: ex.rest || 0,
+        last: hint
+      });
+    }).join("");
+
+    // abilita UI avanzata
+    KongFit.workoutUI.enhanceWorkoutUI();
   }
+
+  /* ---------------- MAIN VIEW ---------------- */
 
   function renderWorkoutView() {
     const db = getDB();
     const session = getSession();
     const user = getCurrentUser(db);
+
     if (!session || !user) return;
 
+    const scheda = getActiveAdminScheda(db);
+
+    if (!scheda) {
+      alert("Nessuna scheda disponibile. Contatta l'admin.");
+      KongFit.app.navigate("home");
+      return;
+    }
+
+    // HEADER
+    const title = $("#workout-title");
+    const subtitle = $("#workout-subtitle");
+    if (title) title.textContent = scheda.name || "Allenamento";
+    if (subtitle) subtitle.textContent = `Scheda attiva · ${todayISO()}`;
+
+    // PRECOMPILA PESO CORPOREO
+    const bwInput = $("#bodyweight");
+    const lastBW = (user.workouts || [])
+      .map(w => w.bodyweightKg)
+      .find(v => v != null);
+    if (bwInput && lastBW != null) bwInput.value = lastBW;
+
+    // RENDER ESERCIZI
+    renderExercisesFromScheda(user, scheda);
+
+    // SUBMIT
     const form = $("#workout-form");
-    const daySelect = $("#workout-day");
-    if (!form || !daySelect) return;
-
-    const { tpl, day, idx } = getNextDay(user);
-
-    // popola select giorni
-    daySelect.innerHTML = tpl.days.map((d, i) =>
-      `<option value="${i}" ${i === idx ? "selected" : ""}>${escapeHtml(d.name)}</option>`
-    ).join("");
-
-    // render esercizi giorno selezionato
-    renderExercises(user, day);
-
-    daySelect.onchange = () => {
-      const chosen = tpl.days[Number(daySelect.value)];
-      renderExercises(user, chosen);
-    };
+    if (!form) return;
 
     form.onsubmit = (ev) => {
       ev.preventDefault();
 
-      const chosen = tpl.days[Number(daySelect.value)];
-      const dateInput = $("#workout-date");
-      const date = (dateInput?.value || todayISO()).trim() || todayISO();
-
-      const bwInput = $("#bodyweight");
+      const date = todayISO();
       const bodyweightKg = bwInput?.value ? Number(bwInput.value) : null;
 
-      const entries = (chosen.exercises || []).map(ex => {
-        const raw = (form.querySelector(`input[data-sets="${ex.id}"]`)?.value || "").trim();
-        const note = (form.querySelector(`input[data-note="${ex.id}"]`)?.value || "").trim();
-        return { exerciseId: ex.id, sets: parseSets(raw), note };
-      }).filter(e => e.sets.length > 0 || e.note.length > 0);
+      const entries = (scheda.exercises || []).map((ex, i) => {
+        const exId = `${scheda.id}_${i}`;
+        const raw = (form.querySelector(`input[data-sets="${exId}"]`)?.value || "").trim();
+        return {
+          exerciseId: exId,
+          sets: parseSets(raw)
+        };
+      }).filter(e => e.sets.length > 0);
 
       if (entries.length === 0) {
-        alert("Inserisci almeno un set o una nota per salvare l’allenamento.");
+        alert("Inserisci almeno un set per salvare l’allenamento.");
         return;
       }
 
       const workout = {
         date,
-        templateId: tpl.id,
-        dayId: chosen.id,
-        dayName: chosen.name,
+        schedaId: scheda.id,
+        schedaName: scheda.name,
         bodyweightKg,
         entries
       };
 
-      // salva
+      // SALVATAGGIO
       const db2 = getDB();
       const u2 = db2.users[session.slug];
       u2.workouts ||= [];
       u2.workouts.unshift(workout);
-
-      // rotazione: avanza sempre di 1 (MVP semplice)
-      u2.config.rotationIndex = (u2.config.rotationIndex || 0) + 1;
-
       setDB(db2);
 
-      // pulizia form
-      if (bwInput) bwInput.value = "";
-      if (dateInput) dateInput.value = "";
-      form.querySelectorAll("input[data-sets], input[data-note]").forEach(i => i.value = "");
+      // FEEDBACK UX
+      const btn = form.querySelector('button[type="submit"]');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Salvataggio…";
+      }
 
-      alert("Allenamento salvato ✅");
-
-      // torna alla home
-      KongFit.app?.navigate?.("home");
+      setTimeout(() => {
+        if (btn) btn.textContent = "Allenamento salvato ✅";
+        setTimeout(() => {
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = "Salva allenamento";
+          }
+          KongFit.app.navigate("home");
+        }, 600);
+      }, 300);
     };
   }
 
   KongFit.workout = { renderWorkoutView };
+
 })();
