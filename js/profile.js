@@ -50,12 +50,16 @@
     `;
 
     // logout
-    const logoutBtn = $("#logout-btn");
     logoutBtn?.addEventListener("click", () => {
-      logout();
-      KongFit.app.navigate("login");
-    });
-  }
+     const db = getDB();
+     if (db.activeWorkout) {
+       if (!confirm("Hai un allenamento in corso. Vuoi davvero uscire?")) {
+         return;
+       }
+     }
+     logout();
+     KongFit.app.navigate("login");
+   });
 
   KongFit.profile = {
     renderProfile
