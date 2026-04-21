@@ -1,42 +1,31 @@
 /* ======================================================
-   Kong Fit - workout.js
-   - Carica esercizi da Google Sheets
-   - Mostra pesi in base all'utente (1111 / 2222)
-   - Nessuna logica admin
-   - Nessuno stato complesso (versione stabile)
+   Kong Fit - workout.js (Google Sheets)
 ====================================================== */
 (function () {
   const KongFit = (window.KongFit = window.KongFit || {});
+  const { getDB } = KongFit.state;
   const { getSession } = KongFit.auth;
 
   const $ = (q) => document.querySelector(q);
 
   function renderWorkoutView() {
     const session = getSession();
+    const db = getDB();
     if (!session) {
       KongFit.app.navigate("login");
       return;
     }
 
-    // ⚠️ PER ORA decidiamo qui quale scheda caricare
-    // (poi lo collegheremo a home / selezione)
-    const SHEET_NAME =
-      session.slug === "mattia"
-        ? "Petto-Spalle | Apr26"
-        : "Schiena-Tricipiti | Apr26";
+    const scheda =
+      GOOGLE_SCHEDE.find(s => s.id === db.activeSchedaId) || GOOGLE_SCHEDE[0];
 
-    $("#workout-title").textContent = SHEET_NAME;
+    $("#workout-title").textContent = scheda.label;
     $("#workout-subtitle").textContent = "Allenamento";
 
-    loadSchedaFromSheet(SHEET_NAME, session.slug)
+    loadSchedaFromSheet(scheda.sheet, session.slug)
       .then(exercises => {
         const wrap = $("#workout-exercises");
         if (!wrap) return;
-
-        if (!exercises || exercises.length === 0) {
-          wrap.innerHTML = `<p class="muted">Nessun esercizio trovato.</p>`;
-          return;
-        }
 
         wrap.innerHTML = exercises.map((ex, i) => {
           return KongFit.workoutUI.createExerciseCard({
@@ -48,27 +37,19 @@
           });
         }).join("");
 
-        // attiva UI (collassabili + timer)
         KongFit.workoutUI.enhanceWorkoutUI();
       })
-      .catch(err => {
-        console.error("Errore caricamento scheda:", err);
+      .catch(() => {
         $("#workout-exercises").innerHTML =
-          `<p class="muted">Errore nel caricamento della scheda.</p>`;
+          `<p class="muted">Errore caricamento scheda.</p>`;
       });
 
-    // ✅ submit semplice (MVP)
-    const form = $("#workout-form");
-    if (form) {
-      form.onsubmit = (ev) => {
-        ev.preventDefault();
-        alert("Allenamento salvato ✅");
-        KongFit.app.navigate("home");
-      };
-    }
+    $("#workout-form").onsubmit = (ev) => {
+      ev.preventDefault();
+      alert("Allenamento salvato ✅");
+      KongFit.app.navigate("home");
+    };
   }
 
-  KongFit.workout = {
-    renderWorkoutView
-  };
+  KongFit.workout = { renderWorkoutView };
 })();
