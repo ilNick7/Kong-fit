@@ -713,3 +713,34 @@ html, body {
 body {
   background: #0e0f14;
 }
+
+
+/* ===============================
+   FULLSCREEN REST TIMER
+=============================== */
+
+#rest-timer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(14, 15, 20, 0.95);
+  z-index: 99999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#rest-timer-overlay.hidden {
+  display: none;
+}
+
+.rest-timer-box {
+  text-align: center;
+}
+
+#rest-timer-value {
+  font-size: 72px;
+  font-weight: 900;
+  color: #ffffff;
+  margin-bottom: 24px;
+}
