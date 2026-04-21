@@ -31,11 +31,17 @@ const GOOGLE_SCHEDE = [
 =============================== */
 
 // Mappa slug utente -> colonna foglio
+
 function getUserColumn(slug) {
-  if (slug === "mattia") return "1111";
-  if (slug === "amico") return "2222";
+  // mapping robusto utenti -> colonne
+  if (slug === "mattia" || slug === "1111") return "1111";
+  if (slug === "amico" || slug === "christian" || slug === "2222") return "2222";
+  if (slug === "3333") return "3333";
+
+  console.warn("Utente non mappato, slug:", slug);
   return null;
 }
+
 
 /* ===============================
    LOAD SCHEDA
