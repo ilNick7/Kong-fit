@@ -683,3 +683,33 @@ button {
   width: 100%;
   margin-top: 10px;
 }
+
+/* ===============================
+   VIEW FULL HEIGHT FIX
+=============================== */
+
+html, body {
+  height: 100%;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+/* ogni view riempie lo schermo */
+[data-view-section] {
+  min-height: 100vh;
+  display: none;
+}
+
+/* contenuto centrale che spinge in basso */
+.home-content {
+  min-height: calc(100vh - 320px); /* 320px = hero */
+  display: flex;
+  flex-direction: column;
+}
+
+/* evita buchi neri */
+body {
+  background: #0e0f14;
+}
