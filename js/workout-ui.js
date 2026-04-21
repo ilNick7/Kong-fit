@@ -1,16 +1,23 @@
 /* ======================================================
-   Kong Fit - workout-ui.js
+ - workout-ui.js
    - Esercizi collassabili
-   - Timer recupero per esercizio
+   - Timer recupero
+   - Timer FULLSCREEN con Interrompi
 ====================================================== */
 (function () {
 
-  function formatTime(sec){
+  /* ===============================
+     UTILS
+  =============================== */
+  function formatTime(sec) {
     const m = Math.floor(sec / 60);
     const s = sec % 60;
-    return `${m}:${String(s).padStart(2,"0")}`;
+    return `${m}:${String(s).padStart(2, "0")}`;
   }
 
+  /* ===============================
+     CREAZIONE CARD ESERCIZIO
+  =============================== */
   function createExerciseCard({ id, name, target, rest, last }) {
     return `
       <div class="workout-ex" data-ex-id="${id}" data-rest="${rest || 0}">
@@ -27,64 +34,93 @@
 
           <div class="workout-timer">
             <div class="timer-display">${formatTime(rest || 0)}</div>
-            <button type="button" class="timer-btn">Start recupero</button>
+            <button type="button" class="timer-btn">
+              Start recupero
+            </button>
           </div>
         </div>
       </div>
     `;
   }
 
+  /* ===============================
+     TIMER FULLSCREEN
+  =============================== */
+  function startFullscreenTimer(seconds) {
+    const overlay = document.getElementById("rest-timer-overlay");
+    const valueEl = document.getElementById("rest-timer-value");
+    const stopBtn = document.getElementById("rest-timer-stop");
+
+    let remaining = seconds;
+    overlay.classList.remove("hidden");
+
+    function render() {
+      valueEl.textContent = formatTime(Math.max(remaining, 0));
+    }
+
+    render();
+
+    const interval = setInterval(() => {
+      remaining--;
+      render();
+
+      if (remaining <= 0) {
+        clearInterval(interval);
+        overlay.classList.add("hidden");
+        navigator.vibrate?.(300);
+      }
+    }, 1000);
+
+    stopBtn.onclick = () => {
+      clearInterval(interval);
+      overlay.classList.add("hidden");
+    };
+  }
+
+  /* ===============================
+     ENHANCE UI
+  =============================== */
   function enhanceWorkoutUI() {
     const list = document.getElementById("workout-exercises");
-    if(!list) return;
+    if (!list) return;
 
-    // COLLAPSE
+    /* -------- COLLASSO -------- */
     list.addEventListener("click", (ev) => {
       const head = ev.target.closest(".workout-ex-head");
-      if(!head) return;
-      head.parentElement.classList.toggle("open");
+      if (!head) return;
+
+      const card = head.closest(".workout-ex");
+      card.classList.toggle("open");
     });
 
-    // TIMER
+    /* -------- TIMER -------- */
     list.addEventListener("click", (ev) => {
       const btn = ev.target.closest(".timer-btn");
-      if(!btn) return;
+      if (!btn) return;
 
       const card = btn.closest(".workout-ex");
-      let seconds = Number(card.dataset.rest || 0);
-      let display = card.querySelector(".timer-display");
+      const seconds = Number(card.dataset.rest || 0);
 
-      if(btn.classList.contains("running")){
-        btn.classList.remove("running");
-        btn.textContent = "Start recupero";
-        clearInterval(card._timer);
+      if (seconds <= 0) {
+        alert("Recupero non impostato");
         return;
       }
 
-      btn.classList.add("running");
-      btn.textContent = "Stop";
-
-      display.textContent = formatTime(seconds);
-
-      card._timer = setInterval(() => {
-        seconds--;
-        display.textContent = formatTime(Math.max(seconds,0));
-        if(seconds <= 0){
-          clearInterval(card._timer);
-          btn.classList.remove("running");
-          btn.textContent = "Start recupero";
-          display.textContent = "0:00";
-          navigator.vibrate?.(200);
-        }
-      }, 1000);
+      startFullscreenTimer(seconds);
     });
+
+    /* -------- AUTO OPEN PRIMO -------- */
+    const first = list.querySelector(".workout-ex");
+    if (first) first.classList.add("open");
   }
 
-  // hook globale chiamato da workout.js dopo render
+  /* ===============================
+     EXPORT
+  =============================== */
   window.KongFit = window.KongFit || {};
   window.KongFit.workoutUI = {
-    enhanceWorkoutUI,
-    createExerciseCard
+    createExerciseCard,
+    enhanceWorkoutUI
   };
 
 })();
