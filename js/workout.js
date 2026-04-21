@@ -1,95 +1,74 @@
 /* ======================================================
-   Kong Fit - workout.js (STEP 3)
-   - Salvataggio progressivo (draft)
-   - Ripristino automatico
-   - Termina allenamento
+   Kong Fit - workout.js
+   - Carica esercizi da Google Sheets
+   - Mostra pesi in base all'utente (1111 / 2222)
+   - Nessuna logica admin
+   - Nessuno stato complesso (versione stabile)
 ====================================================== */
 (function () {
   const KongFit = (window.KongFit = window.KongFit || {});
-  const { getDB, setDB, getCurrentUser } = KongFit.state;
   const { getSession } = KongFit.auth;
 
   const $ = (q) => document.querySelector(q);
 
   function renderWorkoutView() {
-    const db = getDB();
     const session = getSession();
-    const user = getCurrentUser(db);
-    if (!session || !user) return;
-
-    const active = db.activeWorkout;
-    if (!active) {
-      KongFit.app.navigate("home");
+    if (!session) {
+      KongFit.app.navigate("login");
       return;
     }
 
-    const scheda = (db.schede || []).find(s => s.id === active.schedaId);
-    if (!scheda) {
-      db.activeWorkout = null;
-      setDB(db);
-      KongFit.app.navigate("home");
-      return;
-    }
+    // ⚠️ PER ORA decidiamo qui quale scheda caricare
+    // (poi lo collegheremo a home / selezione)
+    const SHEET_NAME =
+      session.slug === "mattia"
+        ? "Petto-Spalle | Apr26"
+        : "Schiena-Tricipiti | Apr26";
 
-    // init draft
-    active.draft ||= { sets: {}, bodyweight: null };
+    $("#workout-title").textContent = SHEET_NAME;
+    $("#workout-subtitle").textContent = "Allenamento";
 
-    $("#workout-title").textContent = scheda.name;
-    $("#workout-subtitle").textContent = "Allenamento in corso";
+    loadSchedaFromSheet(SHEET_NAME, session.slug)
+      .then(exercises => {
+        const wrap = $("#workout-exercises");
+        if (!wrap) return;
 
-    const wrap = $("#workout-exercises");
-    wrap.innerHTML = scheda.exercises.map((ex, i) => {
-      const id = `${scheda.id}_${i}`;
-      return KongFit.workoutUI.createExerciseCard({
-        id,
-        name: ex.name,
-        target: `${ex.sets}x ${ex.reps}`,
-        rest: ex.rest
+        if (!exercises || exercises.length === 0) {
+          wrap.innerHTML = `<p class="muted">Nessun esercizio trovato.</p>`;
+          return;
+        }
+
+        wrap.innerHTML = exercises.map((ex, i) => {
+          return KongFit.workoutUI.createExerciseCard({
+            id: `ex_${i}`,
+            name: ex.name,
+            target: `${ex.sets} x ${ex.reps}`,
+            rest: ex.rest,
+            last: ex.weight
+          });
+        }).join("");
+
+        // attiva UI (collassabili + timer)
+        KongFit.workoutUI.enhanceWorkoutUI();
+      })
+      .catch(err => {
+        console.error("Errore caricamento scheda:", err);
+        $("#workout-exercises").innerHTML =
+          `<p class="muted">Errore nel caricamento della scheda.</p>`;
       });
-    }).join("");
 
-    KongFit.workoutUI.enhanceWorkoutUI();
-
-    // RIPRISTINO SET
-    Object.entries(active.draft.sets).forEach(([id, value]) => {
-      const input = document.querySelector(`input[data-sets="${id}"]`);
-      if (input) input.value = value;
-    });
-
-    // RIPRISTINO PESO
-    const bwInput = $("#bodyweight");
-    if (bwInput && active.draft.bodyweight != null) {
-      bwInput.value = active.draft.bodyweight;
+    // ✅ submit semplice (MVP)
+    const form = $("#workout-form");
+    if (form) {
+      form.onsubmit = (ev) => {
+        ev.preventDefault();
+        alert("Allenamento salvato ✅");
+        KongFit.app.navigate("home");
+      };
     }
-
-    // SALVATAGGIO PROGRESSIVO SET
-    wrap.addEventListener("input", (ev) => {
-      const input = ev.target.closest("input[data-sets]");
-      if (!input) return;
-      active.draft.sets[input.dataset.sets] = input.value;
-      setDB(db);
-    });
-
-    // SALVATAGGIO PESO
-    bwInput?.addEventListener("input", () => {
-      active.draft.bodyweight = Number(bwInput.value) || null;
-      setDB(db);
-    });
-
-    // TERMINA ALLENAMENTO
-    $("#end-workout-btn").onclick = () => {
-      if (!confirm("Terminare l'allenamento?")) return;
-      db.activeWorkout = null;
-      setDB(db);
-      KongFit.app.navigate("home");
-    };
-
-    // SALVA ALLENAMENTO (MVP)
-    $("#workout-form").onsubmit = (ev) => {
-      ev.preventDefault();
-      alert("Allenamento salvato ✅");
-    };
   }
 
-  KongFit.workout = { renderWorkoutView };
+  KongFit.workout = {
+    renderWorkoutView
+  };
 })();
