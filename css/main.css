@@ -685,33 +685,41 @@ button {
 }
 
 /* ===============================
-   VIEW FULL HEIGHT FIX
+   FULL HEIGHT APP FIX (DEFINITIVO)
 =============================== */
 
 html, body {
   height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #0e0f14; /* colore uniforme */
 }
 
 #app {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-/* ogni view riempie lo schermo */
+/* ogni schermata occupa tutto */
 [data-view-section] {
   min-height: 100vh;
   display: none;
 }
 
-/* contenuto centrale che spinge in basso */
+/* contenuto interno sempre pieno */
 .home-content {
-  min-height: calc(100vh - 320px); /* 320px = hero */
+  flex: 1;
   display: flex;
   flex-direction: column;
+  padding-bottom: 24px;
 }
 
-/* evita buchi neri */
-body {
-  background: #0e0f14;
+/* spazio sopra il titolo */
+.workout-header {
+  padding-top: 24px;
 }
 
 
