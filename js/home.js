@@ -11,12 +11,13 @@
   const $ = (q) => document.querySelector(q);
 
   function userInfo(session) {
-    const map = {
-      mattia: { name: "Mattia", initials: "MN" },
-      amico: { name: "Christian", initials: "CP" }
-    };
-    return map[session.slug];
-  }
+     const map = {
+       mattia: { name: "Mattia", initials: "MN" },
+       amico: { name: "Christian", initials: "CP" },
+       elis: { name: "Elis", initials: "EL" }
+     };
+     return map[session.slug];
+   }
 
   function renderHome() {
     const db = getDB();
