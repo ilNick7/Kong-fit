@@ -1,8 +1,8 @@
 /* ======================================================
- - workout-ui.js
-   - Esercizi collassabili
-   - Timer recupero
-   - Timer FULLSCREEN con Interrompi
+   Kong Fit - workout-ui.js (REFINED)
+   - Card collassabili
+   - Input separati KG / REPS
+   - Timer recupero fullscreen
 ====================================================== */
 (function () {
 
@@ -16,7 +16,7 @@
   }
 
   /* ===============================
-     CREAZIONE CARD ESERCIZIO
+     CARD ESERCIZIO
   =============================== */
   function createExerciseCard({ id, name, target, rest, last }) {
     return `
@@ -29,8 +29,12 @@
         <div class="workout-ex-body">
           ${last ? `<div class="workout-last">Ultimo: ${last}</div>` : ""}
 
-          <label>Set (kg x reps)</label>
-          <input data-sets="${id}" type="text" placeholder="es. 80x8, 80x7" />
+          <label>Set</label>
+          <div class="set-row">
+            <input type="number" placeholder="kg" data-kg="${id}" />
+            <span>x</span>
+            <input type="number" placeholder="reps" data-reps="${id}" />
+          </div>
 
           <div class="workout-timer">
             <div class="timer-display">${formatTime(rest || 0)}</div>
@@ -84,32 +88,24 @@
     const list = document.getElementById("workout-exercises");
     if (!list) return;
 
-    /* -------- COLLASSO -------- */
+    /* COLLASSO */
     list.addEventListener("click", (ev) => {
       const head = ev.target.closest(".workout-ex-head");
       if (!head) return;
-
-      const card = head.closest(".workout-ex");
-      card.classList.toggle("open");
+      head.closest(".workout-ex").classList.toggle("open");
     });
 
-    /* -------- TIMER -------- */
+    /* TIMER */
     list.addEventListener("click", (ev) => {
       const btn = ev.target.closest(".timer-btn");
       if (!btn) return;
 
       const card = btn.closest(".workout-ex");
       const seconds = Number(card.dataset.rest || 0);
-
-      if (seconds <= 0) {
-        alert("Recupero non impostato");
-        return;
-      }
-
-      startFullscreenTimer(seconds);
+      if (seconds > 0) startFullscreenTimer(seconds);
     });
 
-    /* -------- AUTO OPEN PRIMO -------- */
+    /* AUTO OPEN PRIMO */
     const first = list.querySelector(".workout-ex");
     if (first) first.classList.add("open");
   }
