@@ -1,8 +1,7 @@
 /* ======================================================
-   Kong Fit - home.js (ACTIVE WORKOUT)
-   - Start nuovo allenamento
-   - Riprendi allenamento
-   - Scelta scheda
+   Kong Fit - home.js (Google Sheets)
+   - Start allenamento
+   - Selezione scheda
 ====================================================== */
 (function () {
   const KongFit = (window.KongFit = window.KongFit || {});
@@ -11,20 +10,12 @@
 
   const $ = (q) => document.querySelector(q);
 
-  function userInfoFromSession(session) {
+  function userInfo(session) {
     const map = {
       mattia: { name: "Mattia", initials: "MN" },
-      amico: { name: "Christian", initials: "CP" },
-      admin: { name: "User", initials: "US" }
+      amico: { name: "Christian", initials: "CP" }
     };
-    return map[session?.slug] || { name: "User", initials: "US" };
-  }
-
-  function getActiveScheda(db) {
-    if (db.activeSchedaId) {
-      return (db.schede || []).find(s => s.id === db.activeSchedaId);
-    }
-    return (db.schede || [])[0] || null;
+    return map[session.slug];
   }
 
   function renderHome() {
@@ -32,65 +23,39 @@
     const session = getSession();
     if (!session) return;
 
-    const info = userInfoFromSession(session);
-
+    const info = userInfo(session);
     $("#home-username").textContent = info.name;
     $("#profile-initials").textContent = info.initials;
 
-    const scheda = getActiveScheda(db);
-    $("#home-scheda-name").textContent = scheda?.name || "Nessuna scheda";
-    $("#home-scheda-desc").textContent = scheda?.desc || "";
+    // ✅ scheda selezionata (fallback: prima)
+    const activeScheda =
+      GOOGLE_SCHEDE.find(s => s.id === db.activeSchedaId) || GOOGLE_SCHEDE[0];
 
-    const startBtn = $("#home-start-btn");
-    const resumeBtn = $("#home-resume-btn");
+    $("#home-scheda-name").textContent = activeScheda.label;
+    $("#home-scheda-desc").textContent = "Scheda di allenamento";
 
-    // 🔁 Allenamento attivo?
-    if (db.activeWorkout) {
-      startBtn.classList.add("hidden");
-      resumeBtn.classList.remove("hidden");
-    } else {
-      startBtn.classList.remove("hidden");
-      resumeBtn.classList.add("hidden");
-    }
-
-    // START NUOVO
-    startBtn.onclick = () => {
-      if (!scheda) {
-        alert("Nessuna scheda disponibile.");
-        return;
-      }
-
-      db.activeWorkout = {
-        schedaId: scheda.id,
-        schedaName: scheda.name,
-        startedAt: new Date().toISOString()
-      };
+    // START
+    $("#home-start-btn").onclick = () => {
+      db.activeSchedaId = activeScheda.id;
       setDB(db);
-
       KongFit.app.navigate("workout");
     };
 
-    // RIPRENDI
-    resumeBtn.onclick = () => {
-      KongFit.app.navigate("workout");
-    };
-
-    // CAMBIA SCHEDA
+    // SELEZIONE SCHEDA
     $("#change-scheda-btn").onclick = () => {
       openSchedaSelect(db);
     };
   }
 
-  /* ---------- MODAL SELEZIONE SCHEDA ---------- */
-
   function openSchedaSelect(db) {
     const modal = $("#scheda-select-modal");
     const list = $("#scheda-select-list");
+
     modal.classList.remove("hidden");
 
-    list.innerHTML = (db.schede || []).map(s => `
+    list.innerHTML = GOOGLE_SCHEDE.map(s => `
       <button class="admin-btn" data-id="${s.id}">
-        ${s.name}
+        ${s.label}
       </button>
     `).join("");
 
