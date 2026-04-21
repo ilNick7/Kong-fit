@@ -33,10 +33,16 @@ const GOOGLE_SCHEDE = [
 // Mappa slug utente -> colonna foglio
 
 function getUserColumn(slug) {
-  // mapping robusto utenti -> colonne
+  // Mapping definitivo utenti -> colonne Google Sheets
+
+  // Mattia
   if (slug === "mattia" || slug === "1111") return "1111";
+
+  // Christian
   if (slug === "amico" || slug === "christian" || slug === "2222") return "2222";
-  if (slug === "3333") return "3333";
+
+  // Elis
+  if (slug === "elis" || slug === "3333") return "3333";
 
   console.warn("Utente non mappato, slug:", slug);
   return null;
