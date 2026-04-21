@@ -3,14 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Kong Fit</title>
-  <meta name="description" content="Kong Fit – Personal workout app" />
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1f3b0a">
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#0e0f14">
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/main.css">
@@ -20,37 +15,32 @@
 
 <main id="app">
 
-  <!-- =====================================================
-       LOGIN / SPLASH
-  ====================================================== -->
+  <!-- ===============================
+       LOGIN
+  =============================== -->
   <section id="view-login" data-view-section class="splash">
     <div class="splash-content">
-      <div class="splash-logo">
-        <img src="assets/kong-fit_white.svg" alt="Kong Fit">
-      </div>
+      <h1>Kong Fit</h1>
 
-      <form id="login-form" class="splash-form">
+      <form id="login-form">
         <input
           id="pin-input"
           type="password"
           inputmode="numeric"
           maxlength="4"
-          placeholder="Inserisci codice..."
+          placeholder="PIN"
         />
-        <button type="submit" class="splash-enter">Entra</button>
+        <button type="submit">Entra</button>
       </form>
     </div>
-
-    <div class="splash-claim">VAI KONG</div>
   </section>
 
-  <!-- =====================================================
-       HOME USER
-  ====================================================== -->
+  <!-- ===============================
+       HOME
+  =============================== -->
   <section id="view-home" data-view-section>
 
     <div class="home-hero">
-      <img src="assets/hero.jpg" alt="">
       <button id="profile-btn" class="profile-dot">
         <span id="profile-initials">US</span>
       </button>
@@ -62,68 +52,55 @@
         Ciao <span id="home-username">—</span>
       </h2>
 
-      <!-- SCHEDA ATTIVA -->
-      <p class="home-subtitle">Scheda selezionata</p>
-
-      <div class="home-active-scheda" id="home-active-scheda-card">
+      <div class="home-active-scheda">
         <h3 id="home-scheda-name">—</h3>
-        <p class="muted" id="home-scheda-desc">—</p>
+        <p id="home-scheda-desc">Scheda di allenamento</p>
+
         <button id="change-scheda-btn" class="admin-btn">
           Cambia scheda
         </button>
       </div>
 
-      <!-- START / RESUME -->
       <div class="home-start">
-
-        <!-- START NUOVO -->
-        <button class="home-start-btn" id="home-start-btn">
-          Start nuovo allenamento
+        <button id="home-start-btn" class="home-start-btn">
+          Start allenamento
         </button>
 
-        <!-- RIPRENDI ALLENAMENTO (nascosto di default) -->
-        <button class="home-start-btn hidden" id="home-resume-btn">
+        <button id="home-resume-btn" class="home-start-btn hidden">
           Riprendi allenamento
         </button>
-
       </div>
 
-      <div class="vai-kong">VAI KONG</div>
     </div>
   </section>
 
-  <!-- =====================================================
+  <!-- ===============================
        WORKOUT
-  ====================================================== -->
+  =============================== -->
   <section id="view-workout" data-view-section>
 
     <div class="home-content">
 
       <div class="workout-header">
-        <h2 id="workout-title">Allenamento</h2>
-        <p class="muted" id="workout-subtitle">—</p>
+        <h2 id="workout-title">—</h2>
+        <p id="workout-subtitle">Allenamento</p>
       </div>
 
       <form id="workout-form">
 
-        <!-- LISTA ESERCIZI -->
         <div id="workout-exercises"></div>
 
-        <!-- PESO CORPOREO -->
-        <div class="workout-bw">
-          <label>Peso corporeo (kg)</label>
-          <input id="bodyweight" type="number" step="0.1">
-        </div>
-
-        <!-- AZIONI -->
         <div class="workout-actions">
           <button type="submit" class="home-start-btn">
             Salva allenamento
           </button>
 
-          <!-- TERMINA ALLENAMENTO -->
           <button type="button" id="end-workout-btn" class="admin-btn danger">
             Termina allenamento
+          </button>
+
+          <button type="button" id="delete-workout-btn" class="admin-btn">
+            Elimina allenamento
           </button>
         </div>
 
@@ -131,37 +108,33 @@
     </div>
   </section>
 
-  <!-- =====================================================
+  <!-- ===============================
        PROFILO
-  ====================================================== -->
+  =============================== -->
   <section id="view-profile" data-view-section>
     <div class="home-content">
       <h2>Profilo</h2>
-      <p class="muted">Profilo utente</p>
+      <button id="logout-btn" class="admin-btn danger">
+        Logout
+      </button>
     </div>
   </section>
 
 </main>
 
-<!-- =====================================================
-     MODAL: SELEZIONE SCHEDA (USER)
-====================================================== -->
+<!-- ===============================
+     MODAL SELEZIONE SCHEDA
+=============================== -->
 <div id="scheda-select-modal" class="modal hidden">
   <div class="modal-card">
-    <div class="modal-head">
-      <h3>Scegli la scheda</h3>
-      <button id="close-scheda-select">✕</button>
-    </div>
-
-    <div id="scheda-select-list">
-      <!-- riempito via JS -->
-    </div>
+    <h3>Scegli la scheda</h3>
+    <div id="scheda-select-list"></div>
+    <button id="close-scheda-select" class="admin-btn">Chiudi</button>
   </div>
 </div>
 
-
 <!-- ===============================
-     FULLSCREEN REST TIMER
+     TIMER FULLSCREEN
 =============================== -->
 <div id="rest-timer-overlay" class="hidden">
   <div class="rest-timer-box">
@@ -172,24 +145,17 @@
   </div>
 </div>
 
-
-<!-- JS -->
+<!-- ===============================
+     JS
+=============================== -->
 <script src="js/state.js"></script>
-<script src="js/templates.js"></script>
 <script src="js/auth.js"></script>
-<script src="js/profile.js"></script>
-<script src="js/home.js"></script>
-<script src="js/admin.js"></script>
 <script src="js/sheets.js"></script>
+<script src="js/home.js"></script>
 <script src="js/workout-ui.js"></script>
 <script src="js/workout.js"></script>
+<script src="js/profile.js"></script>
 <script src="js/app.js"></script>
-
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js");
-  }
-</script>
 
 </body>
 </html>
